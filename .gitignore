@@ -1,5 +1,11 @@
 /cmake-build-debug
 /cmake-build-release
+/CMakeFiles
 /.idea
 
-nf05.exe
+Makefile
+CMakeCache.txt
+cmake_install.cmake
+
+nf05_project
+nf05_project.exe
