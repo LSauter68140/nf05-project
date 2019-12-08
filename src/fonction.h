@@ -6,17 +6,23 @@
 #include <ctype.h>
 #include <time.h>
 
+
 // fonction du main
 void affiPassager(billet passager);
 
-billet ajoutPassager( avion *tabAvion);
+billet ajoutPassager( avion *tabAvion, int nbrAvions);
 
-void generBillet(billet passager, char *numBillet);
+billet generBillet(billet passager);
+
+billet deposeBag(billet passager );
+
+ticketBagage generTicketBag( billet passsager, int n);
 
 void affiSiege(int placeLibre[][500], int longeur, int largeur);
 
-avion initalisationVol(char destination[], char modele[], int nbrplace, char numero[], int longueur, int largeur);
+avion * initialisationVol(int *nbrAvions);
 
+billet * initialisationPassager(int *nbrPassager);
 
 #ifndef NF05_PROJECT_FONCTION_H
 #define NF05_PROJECT_FONCTION_H
