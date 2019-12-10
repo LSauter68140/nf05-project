@@ -48,7 +48,7 @@ billet ajoutPassager(avion *tabAvion, int nbrAvions) {
     int nbrPassager = 1, choixDest, i = 0, siegeAlea;
     billet newPassager;
 
-
+/*
     printf("Vous allez ajouter un nouveau passager\n");
     printf("Classe economique ou Business ? 0 ->eco / 1 -> business\n");
     scanf("%d", &newPassager.privilege);
@@ -84,6 +84,9 @@ billet ajoutPassager(avion *tabAvion, int nbrAvions) {
     /* */
 
     i = 0;
+
+
+
     printf("\n| Prevoir 2h avant le depart pour l'embarquement plus passage de la securite\n");
     while (i < nbrAvions && tabAvion[i].nbrplacelibre > 0) {
         printf("Vol %d ---------- \n|\tDestination  : %s \tModele d'avion : %s \n|\tHoraire %d/%d/%d a  %d h %d \n",
@@ -96,7 +99,7 @@ billet ajoutPassager(avion *tabAvion, int nbrAvions) {
     do {
         printf("Choissez votre destination \n");
         scanf("%d", &choixDest);
-    } while (choixDest < 1 || choixDest > nbrAvions);
+    } while (choixDest < 1 || choixDest > i);
 
     choixDest--;
 
@@ -105,23 +108,14 @@ billet ajoutPassager(avion *tabAvion, int nbrAvions) {
 
     // verifie si le nbr de place disponible est supierieur a 0 ou non si oui met le vol à la fin de la liste avec ceux qui sont déjà complet;
     if (tabAvion[choixDest].nbrplacelibre == 0) {
-        i = 0;
-        while (tabAvion[i].nbrplacelibre > 0)
-            ++i;
-        intermediare = tabAvion[choixDest];
-        tabAvion[choixDest] = tabAvion[i - 1];
-        tabAvion[i - 1] = intermediare;
+        qsort(tabAvion, nbrAvions, sizeof(avion),triVol); // on retrie le tableau au cas ou on reprend un billet et ainsi eviter de le réafficher
         printf("Felicitation vous avez eu la derniere place\n");
     }
 
 
-    //  printf(" l'autre billet %s", tabPassager[nbrPassager - 1].passager.numBillet);
 
-    /* tabAvion[choixDest].placelibre[1][1] = 1;
-     tabAvion[choixDest].placelibre[2][1] = 1;
-     tabAvion[choixDest].placelibre[3][1] = 1;*/
-    printf("choix destinaiton %d %s", choixDest, newPassager.destination);
-    affiSiege(tabAvion[nbrAvions - 1].placelibre, tabAvion[choixDest].taille_X, tabAvion[choixDest].taille_Y);
+    printf("choix destinaiton %d %s", choixDest + 1, newPassager.destination);
+    affiSiege(tabAvion[choixDest].placelibre, tabAvion[choixDest].taille_X, tabAvion[choixDest].taille_Y);
 
 
     do {
@@ -132,11 +126,12 @@ billet ajoutPassager(avion *tabAvion, int nbrAvions) {
 
     if (choix == 'o' || choix == 'O' || choix == '0') {
         printf("Choississez votre place : (taper la ligne et la colone- 0_libre - 1_occcupé  )\n");
+        printf("\n x %d    y %d\n",tabAvion[choixDest].taille_X, tabAvion[choixDest].taille_Y );
         do {
             printf("\n la colonne :");
             scanf("%d", &newPassager.numsiege_X);
             newPassager.numsiege_X--;
-            while (newPassager.numsiege_X > tabAvion[choixDest].taille_X && newPassager.numsiege_X < 0) {
+            while (newPassager.numsiege_X > tabAvion[choixDest].taille_X-1 || newPassager.numsiege_X < 0) {
                 printf("veuillez renseigner une colonne valide");
                 scanf("%d", &newPassager.numsiege_X);
                 newPassager.numsiege_X--;
@@ -145,10 +140,10 @@ billet ajoutPassager(avion *tabAvion, int nbrAvions) {
             printf("\n la ligne :");
             scanf("%d", &newPassager.numsiege_Y);
             newPassager.numsiege_Y--;
-            while (newPassager.numsiege_Y > tabAvion[choixDest].taille_Y && newPassager.numsiege_Y < 0) {
+            while (newPassager.numsiege_Y > tabAvion[choixDest].taille_Y-1|| newPassager.numsiege_Y < 0) {
                 printf("veuillez renseigner une ligne valide");
-                newPassager.numsiege_Y--;
                 scanf("%d", &newPassager.numsiege_Y);
+                newPassager.numsiege_Y--;
 
             }
             if (tabAvion[choixDest].placelibre[newPassager.numsiege_X][newPassager.numsiege_Y] != 0)
@@ -158,23 +153,27 @@ billet ajoutPassager(avion *tabAvion, int nbrAvions) {
 
     } else {
         srand(time(NULL));
-        siegeAlea = (int) (rand() % (tabAvion[choixDest].nbrplacelibre + 1));
-        printf(" \n alea %d", siegeAlea);
+        for (int j = 0; j < 10 ; ++j) {
+            siegeAlea = (int)(rand() / (double)RAND_MAX * (tabAvion[choixDest].nbrplacelibre));
+            printf(" \n%d", siegeAlea);
+        }
+
         newPassager.numsiege_X = 0;
-        newPassager.numsiege_Y = 0;
-        while (siegeAlea > 0) {
+        newPassager.numsiege_Y = -1; // pour bien partir de la place 0 0;
+        while (siegeAlea >= 0) {
+            newPassager.numsiege_Y++;
             if (tabAvion[choixDest].placelibre[newPassager.numsiege_X][newPassager.numsiege_Y] == 0)
                 siegeAlea--;
             if (newPassager.numsiege_Y >= tabAvion[choixDest].taille_X) {
                 newPassager.numsiege_X++;
                 newPassager.numsiege_Y = 0;
             }
-            newPassager.numsiege_Y++;
+
         }
 
     }
     printf("\n siege  %d %d", newPassager.numsiege_X, newPassager.numsiege_Y);
-    tabAvion[choixDest].placelibre[newPassager.numsiege_Y][newPassager.numsiege_X] =
+    tabAvion[choixDest].placelibre[newPassager.numsiege_X][newPassager.numsiege_Y] =
             (newPassager.privilege == 1) ? 2 : 1; // les vip sont notés 2 et les "normaux" sont 1;
     // on réaffiche
     affiSiege(tabAvion[choixDest].placelibre, tabAvion[choixDest].taille_X, tabAvion[choixDest].taille_Y);
@@ -187,32 +186,33 @@ billet ajoutPassager(avion *tabAvion, int nbrAvions) {
     return newPassager;
 }
 
-int sauvPlace(avion *tabAvion, billet passager ){
+int sauvPlace(avion *tabAvion, billet passager) {
 
     char nameVol[50];
     FILE *ptrVol;
-    float tabDonne[4];
-    int choixDest =0, placeOccupees;
+    float tabDonne[5];
+    int choixDest = 0, placeOccupees;
     // on recupere le numéro de destination du vol choisi par le passager via strcmp
-   while (strcmp(tabAvion[choixDest].destination, passager.destination) !=0){
-       choixDest ++;
-   }
-    sprintf(nameVol, "donnees/destination/%s.txt",tabAvion[choixDest].destination);
+    while (strcmp(tabAvion[choixDest].destination, passager.destination) != 0) {
+        choixDest++;
+    }
+    sprintf(nameVol, "donnees/destination/%s.txt", tabAvion[choixDest].destination);
 
     ptrVol = fopen(nameVol, "r");
 
-    if (ptrVol == NULL){
+    if (ptrVol == NULL) {
         printf("Erreur fichier de vol manquant");
         return EXIT_FAILURE;
     }
 
     // on recupere les 4 valeurs fixes
 
-    fscanf(ptrVol,"%f %f %f %f", &tabDonne[0], &tabDonne[1], &tabDonne[2], &tabDonne[3]);
+    fscanf(ptrVol, "%f %f %f %f %f", &tabDonne[0], &tabDonne[1], &tabDonne[2], &tabDonne[3], &tabDonne[4]);
 
-    int **tabPlace = (int**) malloc((int)tabDonne[0] * sizeof(int*)); // on fait tableau d'entier avec le nbr de place prises
-    placeOccupees = tabAvion[choixDest].taille_X * tabAvion[choixDest].taille_Y-(int)tabDonne[0];
-    for (int i = 0; i < placeOccupees ; ++i) {
+    int **tabPlace = (int **) malloc(
+            (int) tabDonne[0] * sizeof(int *)); // on fait tableau d'entier avec le nbr de place prises
+    placeOccupees = tabAvion[choixDest].taille_X * tabAvion[choixDest].taille_Y - (int) tabDonne[0];
+    for (int i = 0; i < placeOccupees; ++i) {
         tabPlace[i] = (int *) malloc(3 * sizeof(int)); // une colonne x et y, plus priorité
         // on recupère les places dans le fichier
         fscanf(ptrVol, "%d %d %d", &tabPlace[i][0], &tabPlace[i][1], &tabPlace[i][3]);
@@ -220,21 +220,22 @@ int sauvPlace(avion *tabAvion, billet passager ){
     fclose(ptrVol); //on referme le fichier et apres on ecrase les données par dessus pour faire une modification
     ptrVol = fopen(nameVol, "w");
     // on change les valeurs à changer
-    tabDonne[0] --; // on enleve une place de libre
+    tabDonne[0]--; // on enleve une place de libre
     tabDonne[1] += (passager.privilege == 1) ? 1 : 0; // si vip  on ajoute un passager vip dans l'avvion
-    tabDonne[2] += (float)passager.nbrBagages;
+    tabDonne[2] += (float) passager.nbrBagages;
 
     for (int j = 0; j < passager.nbrBagages; ++j) {
         tabDonne[3] += passager.bagage[j].poids;
     }
 
     // on remet tout dans le fichier puis on ajoute la nouvelle place dans le fichier
-    fprintf(ptrVol, "%d %d %d %f\n",(int)tabDonne[0], (int)tabDonne[1], (int)tabDonne[2], tabDonne[3]);
+    fprintf(ptrVol, "%d %d %d %f %d\n", (int) tabDonne[0], (int) tabDonne[1], (int) tabDonne[2], tabDonne[3],
+            (int) tabDonne[4]);
 
     for (int k = 0; k < placeOccupees; ++k) {
-        fprintf(ptrVol,"%d %d %d\n",tabPlace[k][0], tabPlace[k][1], tabPlace[k][3]);
+        fprintf(ptrVol, "%d %d %d\n", tabPlace[k][0], tabPlace[k][1], tabPlace[k][3]);
     }
-    fprintf(ptrVol,"%d %d %d\n", passager.numsiege_X, passager.numsiege_X, passager.privilege );
+    fprintf(ptrVol, "%d %d %d\n", passager.numsiege_X, passager.numsiege_Y, passager.privilege);
     fclose(ptrVol);
     printf("\nEmbarquement enregistre");
     return EXIT_SUCCESS;
@@ -315,8 +316,8 @@ ticketBagage generTicketBag(billet passager, int n) {
     return NewBagage;
 }
 
-void affiSiege(int placeLibre[][500], int longeur,
-               int largeur) { //on suppose ici que la longeur de l'avion sera tjrs sup a 10sièges
+void affiSiege(int placeLibre[][500], int longeur, int largeur) {
+
     printf("\n   ");
     int unite = (longeur < 10) ? longeur : 9;
     for (int j = 0; j < unite; ++j)
@@ -332,15 +333,74 @@ void affiSiege(int placeLibre[][500], int longeur,
 
 }
 
-avion * initialisationVol(int *nbrAvions){
+void frontiere(avion *tabAvion, billet *tabPassager, int nbrPassager, int nbrAvion) {
+
+    FILE *ptrVisa;
+    ptrVisa = fopen("donnees/tableVisa.txt", "r");
+    if (ptrVisa == NULL) {
+        printf("\nFichier de Visa introuvable\n Veuillez reesayer....");
+        EXIT_FAILURE;
+    }
+
+    char ***tabPays = (char ***) malloc(nbrAvion * sizeof(char **)); // 3D
+    for (int i = 0; i < nbrAvion; ++i) tabPays[i] = (char **) malloc(2 * sizeof(char *));
+    for (int j = 0; j < nbrAvion; ++j) {
+        for (int k = 0; k < 2; ++k) tabPays[j][k] = (char *) malloc(65 * sizeof(char));
+    }
+    // taille de 65max de caractère pour une destination
+    rewind(ptrVisa);
+    for (int l = 0; l < nbrAvion; ++l) {
+        fscanf(ptrVisa, "%s %s", tabPays[l][0], tabPays[l][1]);
+    } // on recupere les chaines dans le fichier
+
+    for (int m = 0; m < nbrPassager; ++m) {
+        for (int i = 0; i < nbrAvion; ++i) {
+            if (strcmp(tabPassager[m].destination, tabPays[i][0]) == 0) {
+                if (strcmp(tabPassager[m].nationalite, tabPays[i][1]) == 0) {
+                    printf("\n| Passager %s %s \tNationalite %s a destination de %s  numero de billet %s \nPas besoin de Visa\n",
+                           tabPassager[m].nom, tabPassager[m].prenom, tabPassager[m].nationalite, tabPays[i][0],
+                           tabPassager[m].numBillet);
+                } else {
+                    printf("\n| Passager %s %s \tNationalite %s billet num %s a besoin de presenter un Visa pour aller en %s \nVeuillez remettre votre Visa au service des douanes\n",
+                           tabPassager[m].nom, tabPassager[m].prenom, tabPassager[m].nationalite,
+                           tabPassager[m].numBillet, tabPays[i][0]);
+                }
+            }
+        }
+    } // on compare avec la nationalité du passager avec ça destination
+
+}
+
+void securite() {
+
+    printf("\nVous allez passer la securite, vous devez enlever les objets suivant: \n");
+    printf("----------------------------------------------------------------------\n");
+    printf("|\tTout produit liquide, parfum, gel douche, shampoing, lotion, dentifrice, >100ml chacun\n");
+    printf("|\tArme à feu ou  munition ou cartouche pour armes de chasse ou de sport... Y compris explosif\n");
+    printf("|\tArme blanche soit tout objet contondant, coupant qu'il soit métallique ou non (ciseaux, lame, cutter...)\n");
+    printf("|\tTout produit inflamable, acide, pesticide....\n");
+    printf("|\tBatterie lithuim > 160 Wh\n");
+    printf("----------------------------------------------------------------------\n");
+
+}
+
+int triVol (const void* a,const void* b){
+        avion * Aviona = (avion *)a;
+        avion * Avionb = (avion *)b;
+
+    return Avionb->nbrplacelibre - Aviona->nbrplacelibre;
+}
+
+avion *initialisationVol(int *nbrAvions) {
 
     FILE *ptrAvion, *ptrVol;
     int place_x, place_y, placeOccupees, placeVip;
     ptrAvion = fopen("donnees/avion.txt", "r");
     char nameVol[50];
+
     avion *tabAvion = (avion *) malloc(0);// recupere tout les vols dans le fichier
     while (feof(ptrAvion) == 0) {
-        *nbrAvions +=1;
+        *nbrAvions += 1;
         tabAvion = (avion *) realloc(tabAvion, *nbrAvions * sizeof(avion));
         fscanf(ptrAvion, "%s", tabAvion[*nbrAvions - 1].destination);
         fscanf(ptrAvion, "%s", tabAvion[*nbrAvions -
@@ -351,33 +411,35 @@ avion * initialisationVol(int *nbrAvions){
         fscanf(ptrAvion, "%d", &tabAvion[*nbrAvions - 1].taille_Y);
 
         // on récpere l'horaire de l'avion
-        fscanf(ptrAvion, "%d %d %d %d %d", &tabAvion[*nbrAvions - 1].horaire.jour, &tabAvion[*nbrAvions - 1].horaire.mois,
+        fscanf(ptrAvion, "%d %d %d %d %d", &tabAvion[*nbrAvions - 1].horaire.jour,
+               &tabAvion[*nbrAvions - 1].horaire.mois,
                &tabAvion[*nbrAvions - 1].horaire.annee, &tabAvion[*nbrAvions - 1].horaire.heure,
                &tabAvion[*nbrAvions - 1].horaire.minute);
         for (int i = 0; i < tabAvion[*nbrAvions - 1].taille_X; ++i) {
-            for (int j = 0; j < tabAvion[*nbrAvions - 1].taille_Y; ++j)  // on initialise ttes les places à zéro -> vide;
+            for (int j = 0;
+                 j < tabAvion[*nbrAvions - 1].taille_Y; ++j)  // on initialise ttes les places à zéro -> vide;
                 tabAvion[*nbrAvions - 1].placelibre[i][j] = 0;
         }
         // fichier spécifique pour chaque vol et on regarde s'il existe avec les nbr de place de bagages....
-        strcpy(nameVol, "donnees/destination/");
-        strcat(nameVol,
-               tabAvion[*nbrAvions - 1].destination);
-        strcat(nameVol, ".txt");
+        sprintf(nameVol, "donnees/destination/%s.txt", tabAvion[*nbrAvions - 1].destination);
+
         ptrVol = fopen(nameVol, "r+");
         if (ptrVol != NULL) {
             fscanf(ptrVol, "%d", &tabAvion[*nbrAvions - 1].nbrplacelibre);
             fscanf(ptrVol, "%d", &tabAvion[*nbrAvions - 1].passagerPriority);
             fscanf(ptrVol, "%d", &tabAvion[*nbrAvions - 1].nbrBagage);
             fscanf(ptrVol, "%f", &tabAvion[*nbrAvions - 1].ttpdsbagages);
-
-            placeOccupees = tabAvion[*nbrAvions-1].taille_X * tabAvion[*nbrAvions-1].taille_Y -tabAvion[*nbrAvions - 1].nbrplacelibre;
+            fscanf(ptrVol, "%d", &tabAvion[*nbrAvions - 1].passagerEmbarque);
+            placeOccupees = tabAvion[*nbrAvions - 1].taille_X * tabAvion[*nbrAvions - 1].taille_Y -
+                            tabAvion[*nbrAvions - 1].nbrplacelibre;
 
             for (int k = 0;
                  k < placeOccupees; ++k) { // on recupere les places qui sont déjà occupées et on le met dans l'avion
                 fscanf(ptrVol, "%d", &place_x);
                 fscanf(ptrVol, "%d", &place_y);
-                fscanf(ptrAvion, "%d", &placeVip);
-                tabAvion[*nbrAvions - 1].placelibre[place_x][place_y] = (placeVip ==1) ? 2 : 1;
+                fscanf(ptrVol, "%d", &placeVip);
+
+                tabAvion[*nbrAvions - 1].placelibre[place_x][place_y] = (placeVip == 1) ? 2 : 1;
             }
 
 
@@ -385,26 +447,33 @@ avion * initialisationVol(int *nbrAvions){
             // si existe pas on initialisre les variables à 0 et on creer le fichier.
             fclose(ptrVol);
             ptrVol = fopen(nameVol, "w+");
-            tabAvion[*nbrAvions - 1].nbrplacelibre = tabAvion[*nbrAvions-1].taille_X * tabAvion[*nbrAvions-1].taille_Y;
+            tabAvion[*nbrAvions - 1].nbrplacelibre =
+                    tabAvion[*nbrAvions - 1].taille_X * tabAvion[*nbrAvions - 1].taille_Y;
             tabAvion[*nbrAvions - 1].passagerPriority = 0;
             tabAvion[*nbrAvions - 1].nbrBagage = 0;
             tabAvion[*nbrAvions - 1].ttpdsbagages = 0;
-            fprintf(ptrVol, "%d %d %d %f\n", tabAvion[*nbrAvions - 1].nbrplacelibre,
+            tabAvion[*nbrAvions - 1].passagerEmbarque = 0;
+            fprintf(ptrVol, "%d %d %d %f %d\n", tabAvion[*nbrAvions - 1].nbrplacelibre,
                     tabAvion[*nbrAvions - 1].passagerPriority, tabAvion[*nbrAvions - 1].nbrBagage,
-                    tabAvion[*nbrAvions - 1].ttpdsbagages);
+                    tabAvion[*nbrAvions - 1].ttpdsbagages, tabAvion[*nbrAvions - 1].passagerEmbarque);
         }
         fclose(ptrVol);
 
     }
     fclose(ptrAvion);
+    printf("zvrv %d ", *nbrAvions);
+
+    // on fait un tris pour mettre les avion plein en fin de tableau et pour ne pas avoir à les afficher
+    qsort(tabAvion, *nbrAvions, sizeof(avion),triVol);
+
     return tabAvion;
 
 }
 
-billet * initialisationPassager(int *nbrPassager){
+billet *initialisationPassager(int *nbrPassager) {
 
 
-    billet *tabPassager = (billet*) malloc(0);
+    billet *tabPassager = (billet *) malloc(0);
 
     FILE *ptrpassager;
     ptrpassager = fopen("donnees/passagers.txt", "r");
@@ -413,22 +482,24 @@ billet * initialisationPassager(int *nbrPassager){
         return 0;
     }
 
-        while (feof(ptrpassager) == 0) {
+    while (feof(ptrpassager) == 0) {
 
-            tabPassager = (billet *) realloc(tabPassager, (*nbrPassager + 1) * sizeof(billet));
+        tabPassager = (billet *) realloc(tabPassager, (*nbrPassager + 1) * sizeof(billet));
 
-            //fprintf(ptrBillet,"%s %s %d",numBillet, passager.destination, passager.privilege );
-            //    fprintf(ptrBillet,"%s %s %d %d %s %s %s",passager.nom, passager.prenom,passager.age, passager.civilite == 0,passager.nationalite, passager.numPassport);
+        //fprintf(ptrBillet,"%s %s %d",numBillet, passager.destination, passager.privilege );
+        //    fprintf(ptrBillet,"%s %s %d %d %s %s %s",passager.nom, passager.prenom,passager.age, passager.civilite == 0,passager.nationalite, passager.numPassport);
 
-            fscanf(ptrpassager, "%s %s %s %s %d %d %d %s %s %d %d %d", tabPassager[*nbrPassager].numBillet,
-                   tabPassager[*nbrPassager].destination, tabPassager[*nbrPassager].prenom, tabPassager[*nbrPassager].nom,
-                   &tabPassager[*nbrPassager].age,
-                   &tabPassager[*nbrPassager].civilite, &tabPassager[*nbrPassager].privilege,
-                   tabPassager[*nbrPassager].nationalite,
-                   tabPassager[*nbrPassager].numPassport,&tabPassager[*nbrPassager].nbrBagages, &tabPassager[*nbrPassager].numsiege_X, &tabPassager[*nbrPassager].numsiege_Y ); // on recupere les coordonnéees du passager
+        fscanf(ptrpassager, "%s %s %s %s %d %d %d %s %s %d %d %d", tabPassager[*nbrPassager].numBillet,
+               tabPassager[*nbrPassager].destination, tabPassager[*nbrPassager].prenom, tabPassager[*nbrPassager].nom,
+               &tabPassager[*nbrPassager].age,
+               &tabPassager[*nbrPassager].civilite, &tabPassager[*nbrPassager].privilege,
+               tabPassager[*nbrPassager].nationalite,
+               tabPassager[*nbrPassager].numPassport, &tabPassager[*nbrPassager].nbrBagages,
+               &tabPassager[*nbrPassager].numsiege_X,
+               &tabPassager[*nbrPassager].numsiege_Y); // on recupere les coordonnéees du passager
 
-            *nbrPassager +=1;
-        }
+        *nbrPassager += 1;
+    }
 
     fclose(ptrpassager);
     return tabPassager;
@@ -449,6 +520,8 @@ int main(int argc, char **argv) {
     tabAvion = initialisationVol(&nbrAvions);
 
 
+
+
     int j = 0;
     printf("nbr passager %d ", nbrPassager);
     while (j < nbrPassager) {
@@ -456,12 +529,18 @@ int main(int argc, char **argv) {
                tabPassager[j].destination);
         ++j;
     }
+    // on ajoute un passager
+    nbrPassager++;
+
+    tabPassager[nbrPassager] = ajoutPassager(tabAvion, nbrAvions);
+    ///nbrPassager ++;
     //tabPassager[0] = ajoutPassager(tabAvion, nbrAvions);
     printf("Depose des bagages \n");
-    tabPassager[0] = deposeBag(tabPassager[0]);
-    tabPassager[0].numsiege_X = 10;
-    tabPassager[0].numsiege_Y = 5;
-    sauvPlace(tabAvion, tabPassager[0]);
+    tabPassager[nbrPassager] = deposeBag(tabPassager[nbrPassager]);
+    sauvPlace(tabAvion, tabPassager[nbrPassager]);
+    printf("\nPassage de la frontiere");
+    frontiere(tabAvion, tabPassager, nbrPassager, nbrAvions);
+    securite();
 /*
 
 

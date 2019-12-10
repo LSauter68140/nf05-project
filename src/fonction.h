@@ -20,6 +20,10 @@ ticketBagage generTicketBag( billet passsager, int n);
 
 void affiSiege(int placeLibre[][500], int longeur, int largeur);
 
+void securite();
+
+int triVol (const void* a,const void* b);
+
 avion * initialisationVol(int *nbrAvions);
 
 billet * initialisationPassager(int *nbrPassager);

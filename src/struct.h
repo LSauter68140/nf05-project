@@ -31,10 +31,11 @@ typedef struct {
 typedef struct {
     char modeleAvion[20], destination[50], numeroVol[15];
     int nbrplace, nbrplacelibre;
-    int placelibre[500][500];// vu 2d de haut des places de l'avion 1 -> occupé 0 -> libre on initialise le tableu à 0
+    int placelibre[500][500];// vu 2d de haut des places de l'avion 1/2 occupé   0 -> libre on initialise le tableau à 0
     int taille_X, taille_Y; // taille reel de l'avion qu'on met lors de son initialisation
     int nbrBagage;
     int passagerPriority; // nombre de passagers VIP
+    int passagerEmbarque; // nombre de passagers qui "sont" déjà dans l'avion
     float ttpdsbagages; // somme du poids de tout les bagages
     date horaire;
 } avion;
