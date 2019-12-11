@@ -1,12 +1,15 @@
 
-#include "struct.h"
+
+#ifndef NF05_PROJECT_FONCTION_H
+#define NF05_PROJECT_FONCTION_H
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
 #include <time.h>
 
-
+#include "struct.h"
 // fonction du main
 void affiPassager(billet passager);
 
@@ -28,7 +31,6 @@ avion * initialisationVol(int *nbrAvions);
 
 billet * initialisationPassager(int *nbrPassager);
 
-#ifndef NF05_PROJECT_FONCTION_H
-#define NF05_PROJECT_FONCTION_H
+
 
 #endif //NF05_PROJECT_FONCTION_H

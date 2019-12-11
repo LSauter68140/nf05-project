@@ -48,7 +48,7 @@ billet ajoutPassager(avion *tabAvion, int nbrAvions) {
     int nbrPassager = 1, choixDest, i = 0, siegeAlea;
     billet newPassager;
 
-/*
+
     printf("Vous allez ajouter un nouveau passager\n");
     printf("Classe economique ou Business ? 0 ->eco / 1 -> business\n");
     scanf("%d", &newPassager.privilege);
@@ -81,7 +81,7 @@ billet ajoutPassager(avion *tabAvion, int nbrAvions) {
         printf("\nNbr de bagage.s emis non correct max 2 pour prioritaire et sinon 1\n");
         scanf("%d", &newPassager.nbrBagages);
     }
-    /* */
+
 
     i = 0;
 
@@ -105,13 +105,6 @@ billet ajoutPassager(avion *tabAvion, int nbrAvions) {
 
     strcpy(newPassager.destination, tabAvion[choixDest].destination);
     tabAvion[choixDest].nbrplacelibre--;
-
-    // verifie si le nbr de place disponible est supierieur a 0 ou non si oui met le vol à la fin de la liste avec ceux qui sont déjà complet;
-    if (tabAvion[choixDest].nbrplacelibre == 0) {
-        qsort(tabAvion, nbrAvions, sizeof(avion),triVol); // on retrie le tableau au cas ou on reprend un billet et ainsi eviter de le réafficher
-        printf("Felicitation vous avez eu la derniere place\n");
-    }
-
 
 
     printf("choix destinaiton %d %s", choixDest + 1, newPassager.destination);
@@ -153,30 +146,37 @@ billet ajoutPassager(avion *tabAvion, int nbrAvions) {
 
     } else {
         srand(time(NULL));
-        for (int j = 0; j < 10 ; ++j) {
-            siegeAlea = (int)(rand() / (double)RAND_MAX * (tabAvion[choixDest].nbrplacelibre));
-            printf(" \n%d", siegeAlea);
-        }
 
-        newPassager.numsiege_X = 0;
-        newPassager.numsiege_Y = -1; // pour bien partir de la place 0 0;
+        siegeAlea = (int)(rand() / (double)RAND_MAX * (tabAvion[choixDest].nbrplacelibre));
+        printf(" \n%d", siegeAlea);
+
+
+        newPassager.numsiege_X = -1;
+        newPassager.numsiege_Y = 0; // pour bien partir de la place 0 0;
         while (siegeAlea >= 0) {
-            newPassager.numsiege_Y++;
+            newPassager.numsiege_X++;
             if (tabAvion[choixDest].placelibre[newPassager.numsiege_X][newPassager.numsiege_Y] == 0)
                 siegeAlea--;
-            if (newPassager.numsiege_Y >= tabAvion[choixDest].taille_X) {
-                newPassager.numsiege_X++;
-                newPassager.numsiege_Y = 0;
+            if (newPassager.numsiege_X >= tabAvion[choixDest].taille_X) {
+                newPassager.numsiege_Y++;
+                newPassager.numsiege_X = 0;
             }
 
         }
 
     }
     printf("\n siege  %d %d", newPassager.numsiege_X, newPassager.numsiege_Y);
+
     tabAvion[choixDest].placelibre[newPassager.numsiege_X][newPassager.numsiege_Y] =
             (newPassager.privilege == 1) ? 2 : 1; // les vip sont notés 2 et les "normaux" sont 1;
     // on réaffiche
     affiSiege(tabAvion[choixDest].placelibre, tabAvion[choixDest].taille_X, tabAvion[choixDest].taille_Y);
+
+    // verifie si le nbr de place disponible est supierieur a 0 ou non si oui met le vol à la fin de la liste avec ceux qui sont déjà complet;
+    if (tabAvion[choixDest].nbrplacelibre == 0) {
+        qsort(tabAvion, nbrAvions, sizeof(avion),triVol); // on retrie le tableau au cas ou on reprend un billet et ainsi eviter de le réafficher
+        printf("Felicitation vous avez eu la derniere place\n");
+    }
     printf("Votre siege a bien ete reserve \n");
 
     newPassager = generBillet(newPassager); // genere le billet
@@ -461,7 +461,6 @@ avion *initialisationVol(int *nbrAvions) {
 
     }
     fclose(ptrAvion);
-    printf("zvrv %d ", *nbrAvions);
 
     // on fait un tris pour mettre les avion plein en fin de tableau et pour ne pas avoir à les afficher
     qsort(tabAvion, *nbrAvions, sizeof(avion),triVol);
@@ -512,13 +511,12 @@ int main(int argc, char **argv) {
     billet *tabPassager;
     avion *tabAvion;
     int nbrPassager = 0, nbrAvions = 0;
-
+    char choix = "";
     printf("Projet d'NF05 - Gestion des passagers dans un aeroport\n");
 
     //initialisation des vols et passagers
     tabPassager = initialisationPassager(&nbrPassager);
     tabAvion = initialisationVol(&nbrAvions);
-
 
 
 
@@ -529,6 +527,19 @@ int main(int argc, char **argv) {
                tabPassager[j].destination);
         ++j;
     }
+
+   /* while (choix != "Q" && choix !="q"){
+        printf("\n\n| 1.\tAjouter Passager ");
+        printf("\n| 2.\t Faire passer passager Securite");
+        printf("\n3.\tFaire embarquer passager");
+        printf("\n\nQ. Quitter");
+        printf("\n");
+
+    }
+
+
+*/
+
     // on ajoute un passager
     nbrPassager++;
 
