@@ -2,9 +2,10 @@
 #include "fonction.h"
 
 
-void affiPassager(billet passager) {
 
-    printf("Billet Numero :  %c ---- \n", passager.numBillet);
+void displayTicket(billet passager) {
+
+    printf("Billet Numero :  %s \n", passager.numBillet);
     printf("______________________________________________\n");
     if (passager.privilege == 1) {
 
@@ -40,6 +41,41 @@ void affiPassager(billet passager) {
     printf("|\tDestination %s \n\n", passager.destination);
     printf("______________________________________________\n");
 };
+
+void displayPassenger (billet *tabPassenger, int passengerNb){
+
+
+    for (int i = 0; i < passengerNb; ++i) {
+        printf("\n%d. %s %s  \nDestination %s \tNum Billet %s", i+1, tabPassenger[i].nom, tabPassenger[i].prenom, tabPassenger[i].destination, tabPassenger[i].numBillet);
+        printf("\n****************\n");
+    }
+
+}
+
+void displayFlight (avion *tabPlane, int planeNb){
+
+    int i =0;
+    printf("\n| Prevoir 2h avant le depart pour l'embarquement et avec le passage de la securite\n");
+    while (i < planeNb && tabPlane[i].nbrplacelibre > 0) {
+        printf("Vol %d ---------- \n|\tDestination  : %s \tModele d'avion : %s \n|\tHoraire %d/%d/%d a  %d h %d \n",
+               i + 1, tabPlane[i].destination, tabPlane[i].modeleAvion, tabPlane[i].horaire.jour,
+               tabPlane[i].horaire.mois, tabPlane[i].horaire.annee, tabPlane[i].horaire.heure,
+               tabPlane[i].horaire.minute);
+
+        ++i;
+    }
+
+}
+
+void selectPassenger(billet *tabPassenger, int passengerNb){
+
+    int choice;
+    displayPassenger(tabPassenger, passengerNb);
+    printf("Choissez le quel de ces passagers vous voulez afficher le billet complet \n ");
+    scanf("%d", &choice);
+    displayTicket(tabPassenger[choice-1]);
+
+}
 
 billet ajoutPassager(avion *tabAvion, int nbrAvions) {
 
@@ -87,15 +123,8 @@ billet ajoutPassager(avion *tabAvion, int nbrAvions) {
 
 
 
-    printf("\n| Prevoir 2h avant le depart pour l'embarquement plus passage de la securite\n");
-    while (i < nbrAvions && tabAvion[i].nbrplacelibre > 0) {
-        printf("Vol %d ---------- \n|\tDestination  : %s \tModele d'avion : %s \n|\tHoraire %d/%d/%d a  %d h %d \n",
-               i + 1, tabAvion[i].destination, tabAvion[i].modeleAvion, tabAvion[i].horaire.jour,
-               tabAvion[i].horaire.mois, tabAvion[i].horaire.annee, tabAvion[i].horaire.heure,
-               tabAvion[i].horaire.minute);
 
-        ++i;
-    }
+    displayFlight(tabAvion, nbrAvions);
     do {
         printf("Choissez votre destination \n");
         scanf("%d", &choixDest);
@@ -504,6 +533,73 @@ billet *initialisationPassager(int *nbrPassager) {
     return tabPassager;
 }
 
+
+//Liste chainée avec tout les passagers pour pouvoir les faire embarqué (passage de la sécurité plus frontière avec les visas
+
+void display(billet *temp){
+    int i = 1;
+    while (temp != NULL){
+        printf("%d    %s\n",  i,temp->nom);
+        ++i;
+        temp = temp->follow;
+    }
+
+}
+
+void supprElement (billet **l , int Nb) {
+
+    billet *temp = *l;
+    for (int i = 0; i <Nb; ++i) {
+        temp = temp->follow;
+    }
+       // temp2 = temp->follow;
+        temp->follow = temp->follow->follow;
+
+
+
+}
+
+void boardFlight(avion *tabAvion, billet *tabPassager, int nbrAvions, int nbrPassager ){
+
+
+    int i = 0, destChoice, passChoice;
+    billet *passengerStr = NULL;
+    printf("Choissez le vol a faire embarquer\n");
+
+    while (i < nbrAvions) {
+        printf("Vol %d ---------- \n|\tDestination  : %s \tModele d'avion : %s \n|\tHoraire %d/%d/%d a  %d h %d \n|\t il reste %d place de libre\n",
+               i + 1, tabAvion[i].destination, tabAvion[i].modeleAvion, tabAvion[i].horaire.jour,
+               tabAvion[i].horaire.mois, tabAvion[i].horaire.annee, tabAvion[i].horaire.heure,
+               tabAvion[i].horaire.minute, tabAvion[i].nbrplacelibre);
+        ++i;
+    }
+    scanf("%d", &destChoice);
+    destChoice --;
+    printf("\n ----- %s", tabAvion[destChoice].destination); // on prend les Vip
+    for (int j = 0; j < nbrPassager ; ++j) {
+        if (strcmp(tabAvion[destChoice].destination, tabPassager[j].destination)==0 ){
+            passengerStr = addPassenger(passengerStr, tabPassager, j );
+
+    }
+    }
+    display(passengerStr);
+    printf("Quelle passager desirez vous faire embarquer ?\n");
+    scanf("%d", &passChoice);
+    supprElement( &passengerStr, passChoice);
+    display(passengerStr);
+ }
+
+
+billet *addPassenger(billet *strg, billet *tabPassager, int nb) {
+
+    billet *newPassenger = (billet*) malloc(sizeof(billet));
+    newPassenger[0] = tabPassager[nb];
+    newPassenger->follow = strg;
+
+    return newPassenger;
+}
+
+
 int main(int argc, char **argv) {
 
     // on commence par récupérer les avions et passagers
@@ -511,39 +607,77 @@ int main(int argc, char **argv) {
     billet *tabPassager;
     avion *tabAvion;
     int nbrPassager = 0, nbrAvions = 0;
-    char choix = "";
-    printf("Projet d'NF05 - Gestion des passagers dans un aeroport\n");
+    char choice, nothing;
 
     //initialisation des vols et passagers
     tabPassager = initialisationPassager(&nbrPassager);
     tabAvion = initialisationVol(&nbrAvions);
 
 
+    do{
 
-    int j = 0;
-    printf("nbr passager %d ", nbrPassager);
-    while (j < nbrPassager) {
-        printf("Vol %d ---------- \n Passager  : %s \t Destination : %s \n", j + 1, tabPassager[j].nom,
-               tabPassager[j].destination);
-        ++j;
-    }
-
-   /* while (choix != "Q" && choix !="q"){
-        printf("\n\n| 1.\tAjouter Passager ");
-        printf("\n| 2.\t Faire passer passager Securite");
-        printf("\n3.\tFaire embarquer passager");
+        printf("\nProjet d'NF05 - Gestion des passagers dans un aeroport\n");
+        printf("Que voulez vous faire ?\n");
+        printf("\n| 1.\tAjouter Passager");
+        printf("\n| 2.\tAjouter un Vol");
+        printf("\n| 3.\tEmbarquer un Vol");
+        printf("\n| 4.\tVoir les passagers qui ont pris un billet");
+        printf("\n| 5.\tVoir les vols disponible");
+        printf("\n| 6.\tConsulter le billet d'un passager specifique");
+        printf("\n| 7.\tConsulter l'historique des vols (sur une periode donnee)");
         printf("\n\nQ. Quitter");
-        printf("\n");
 
-    }
+        scanf("%c", &choice);
+        scanf("%c", &nothing); // abosrbe l'espace d'avant
+        //clear();
+
+        switch (choice){
+
+            case '1' :
+                tabPassager[nbrPassager] = ajoutPassager(tabAvion, nbrAvions);
+                nbrPassager ++;
+                break;
+            case '2':
+                printf("Fonctionalite non disponible pour le moment\n");
+                break;
+            case '3':
+                boardFlight(tabAvion, tabPassager, nbrAvions, nbrPassager);
+                break;
+            case '4' :
+                printf("\n Il y a %d passagers inscrit", nbrPassager);
+                displayPassenger(tabPassager, nbrPassager);
+                printf("\n");
+                break;
+            case '5' :
+                printf("\n Vols disponible : \n");
+                displayFlight(tabAvion, nbrAvions);
+                break;
+            case '6' :
+                selectPassenger(tabPassager, nbrPassager);
+                break;
+            case '7' :
+                printf("en cours de developement\n");
+                break;
+
+           default:
+                printf("Nous avons pas compris votre requete veuillez reessayer\n");
+                break;
 
 
-*/
+        }
 
-    // on ajoute un passager
+    }while (choice != 'Q' && choice !='q' && choice != '0');
+
+
+
+
+
+
+
+/*    // on ajoute un passager
     nbrPassager++;
 
-    tabPassager[nbrPassager] = ajoutPassager(tabAvion, nbrAvions);
+   // tabPassager[nbrPassager] = ajoutPassager(tabAvion, nbrAvions);
     ///nbrPassager ++;
     //tabPassager[0] = ajoutPassager(tabAvion, nbrAvions);
     printf("Depose des bagages \n");
@@ -552,7 +686,6 @@ int main(int argc, char **argv) {
     printf("\nPassage de la frontiere");
     frontiere(tabAvion, tabPassager, nbrPassager, nbrAvions);
     securite();
-/*
 
 
 

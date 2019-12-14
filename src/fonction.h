@@ -11,7 +11,13 @@
 
 #include "struct.h"
 // fonction du main
-void affiPassager(billet passager);
+void displayTicket(billet passager);
+
+void displayPassenger (billet *tabPassenger, int passengerNb);
+
+void displayFlight (avion *tabPlane, int planeNb);
+
+void selectPassenger(billet *tabPassenger, int passengerNb);
 
 billet ajoutPassager( avion *tabAvion, int nbrAvions);
 
@@ -31,6 +37,10 @@ avion * initialisationVol(int *nbrAvions);
 
 billet * initialisationPassager(int *nbrPassager);
 
+void boardFlight(avion *tabAvion, billet *tabPassager, int nbrAvions, int nbrPassager );
 
+void clear();
+
+billet *addPassenger(billet *strg, billet *tabPassager, int nb);
 
 #endif //NF05_PROJECT_FONCTION_H

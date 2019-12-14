@@ -12,7 +12,7 @@ typedef struct {
 }date;
 
 
-typedef struct {
+typedef struct billet{
 
     char nom[50], prenom[40], numPassport[10], destination[50], nationalite[50], numBillet[12];
     int nbrBagages; // jusqu'à 3 bagages soute (un bagage cabine d'office)
@@ -23,6 +23,7 @@ typedef struct {
     int numsiege_X; //généré en fonction des places disponible ou le voyageur peut choisir egalement sa place
     int numsiege_Y;
     ticketBagage bagage[2]; // un passager peut en avoir 2 maximum
+    struct billet *follow;
 } billet;
 
 
