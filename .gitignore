@@ -2,6 +2,9 @@
 /cmake-build-release
 /CMakeFiles
 /.idea
+/.vscode
+
+/donnees
 
 Makefile
 CMakeCache.txt
