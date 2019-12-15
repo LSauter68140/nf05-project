@@ -15,7 +15,7 @@ void displayTicket(billet passager);
 
 void displayPassenger (billet *tabPassenger, int passengerNb);
 
-void displayFlight (avion *tabPlane, int planeNb);
+int displayFlight (avion *tabPlane, int planeNb);
 
 void selectPassenger(billet *tabPassenger, int passengerNb);
 

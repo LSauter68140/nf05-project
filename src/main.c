@@ -2,7 +2,6 @@
 #include "fonction.h"
 
 
-
 void displayTicket(billet passager) {
 
     printf("Billet Numero :  %s \n", passager.numBillet);
@@ -52,9 +51,9 @@ void displayPassenger (billet *tabPassenger, int passengerNb){
 
 }
 
-void displayFlight (avion *tabPlane, int planeNb){
+int displayFlight (avion *tabPlane, int planeNb){
 
-    int i =0;
+    int i = 0;
     printf("\n| Prevoir 2h avant le depart pour l'embarquement et avec le passage de la securite\n");
     while (i < planeNb && tabPlane[i].nbrplacelibre > 0) {
         printf("Vol %d ---------- \n|\tDestination  : %s \tModele d'avion : %s \n|\tHoraire %d/%d/%d a  %d h %d \n",
@@ -65,6 +64,7 @@ void displayFlight (avion *tabPlane, int planeNb){
         ++i;
     }
 
+    return i;
 }
 
 void selectPassenger(billet *tabPassenger, int passengerNb){
@@ -124,7 +124,7 @@ billet ajoutPassager(avion *tabAvion, int nbrAvions) {
 
 
 
-    displayFlight(tabAvion, nbrAvions);
+    i = displayFlight(tabAvion, nbrAvions);
     do {
         printf("Choissez votre destination \n");
         scanf("%d", &choixDest);
@@ -658,7 +658,12 @@ int main(int argc, char **argv) {
             case '7' :
                 printf("en cours de developement\n");
                 break;
-
+            case 'q' :
+                break;
+            case '0' :
+                break;
+            case 'Q' :
+                break;
            default:
                 printf("Nous avons pas compris votre requete veuillez reessayer\n");
                 break;
