@@ -24,7 +24,7 @@ typedef struct {
 } Passenger;
 
 typedef struct {
-    char id[12];
+    char id[13];
     Passenger passenger;
     char destination[50];
     int vip;            // 0 pas VIP, 1 VIP
