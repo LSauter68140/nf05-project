@@ -179,6 +179,7 @@ void displayTicket(Ticket ticket) {
 
 void generateTicket(Ticket* ticket) {
     char fileContent[300];
+    FILE* file = NULL;
 
     // On génère l'id du billet
     generateTicketId(ticket, ticket->id);
@@ -189,7 +190,12 @@ void generateTicket(Ticket* ticket) {
         ticket->passenger.passportNumber, ticket->destination, ticket->vip, ticket->luggageCount, ticket->seat.x, ticket->seat.y);
 
     // On ajoute le billet à la liste
-    appendFile("donnees/passagers.txt", fileContent);
+    file = fopen("donnees/passagers.txt", "a");
+    if(file != NULL) {
+        fputs(fileContent, file);
+        fclose(file);
+    }
+
     printf("\n\n----- le billet se trouve à la racine du programme dans passagers.txt-----\n");
 }
 
@@ -200,22 +206,24 @@ void generateTicketId(const Ticket* ticket, char* ticketId) {
     sprintf(age, "%d", ticket->passenger.age);
 
     ticketId[0] = ticket->passenger.firstname[0];
-    ticketId[1] = ticket->passenger.firstname[1];
+    ticketId[1] = ticket->passenger.firstname[1] != '\0' ? ticket->passenger.firstname[1] : '0';
     ticketId[2] = ticket->passenger.lastname[0];
-    ticketId[3] = ticket->passenger.lastname[1];
+    ticketId[3] = ticket->passenger.lastname[1] != '\0' ? ticket->passenger.lastname[1] : '0';
     ticketId[4] = age[0];
-    ticketId[5] = age[1];
+    ticketId[5] = age[1] != '\0' ? age[1] : 'X';
     ticketId[6] = ticket->passenger.nationality[0];
-    ticketId[7] = ticket->passenger.nationality[1];
+    ticketId[7] = ticket->passenger.nationality[1] != '\0' ? ticket->passenger.nationality[1] : '0';
     ticketId[8] = ticket->passenger.passportNumber[0];
-    ticketId[9] = ticket->passenger.passportNumber[1];
+    ticketId[9] = ticket->passenger.passportNumber[1] != '\0' ? ticket->passenger.passportNumber[1] : '0';
     ticketId[10] = ticket->destination[0];
-    ticketId[11] = ticket->destination[1];
+    ticketId[11] = ticket->destination[1] != '\0' ? ticket->destination[1] : '0';
     ticketId[12] = '\0'; // pour bien définir la fin de la chaine de caractère
 
     // En majuscule
     for(int i = 0; i < 12; i++) {
-        ticketId[i] = toupper(ticketId[i]);
+        if(ticketId[i] > 97 && ticketId[i] < 122) {
+            ticketId[i] = ticketId[i] - 32;
+        }
     }
 }
 
@@ -223,33 +231,28 @@ void addLuggages(Ticket* ticket) {
     printf("Vous pouvez deposer %d bagages en soute \n", ticket->luggageCount);
 
     for (int i = 0; i < ticket->luggageCount; ++i) {
-        generateLuggage(ticket, i);
+        char filename[20] = "Ticket ";
+        sprintf(filename, "Ticket %d.txt", i + 1);
+
+        // Get luggage info
+        printf("Poids de votre bagage en kg ? (max 20kg sinon supplement) : ");
+        scanf("%f", &ticket->luggagesWeight[i]);
+
+        // Generate file
+        FILE* file;
+        file = fopen(filename, "w");
+
+        fprintf(file, "------------------------------------------------------\n");
+        fprintf(file, "Bagage appartenant à %s %s\n", ticket->passenger.firstname, ticket->passenger.lastname);
+        fprintf(file, "Numero de bagage \t %d\n", i);
+        fprintf(file, "Poids : \t%fkg\n", ticket->luggagesWeight[i]);
+        if (ticket->vip == 1) {
+            fprintf(file, "Bagage prioritaire \n");
+        } else {
+            fprintf(file, "Bagage non prioritaire\n");
+        }
+        fprintf(file, "\n------------------------------------------------------");
+
+        fclose(file);
     }
-}
-
-void generateLuggage(Ticket* ticket, int index) {
-    char filename[20] = "Ticket ";
-    sprintf(filename, "Ticket %d.txt", index + 1);
-
-    // Get luggage info
-    ticket->luggages[index].id = index + 1;
-    printf("Poids de votre bagage en kg ? (max 20kg sinon supplement) : ");
-    scanf("%f", &ticket->luggages[index].weight);
-
-    // Generate file
-    FILE* file;
-    file = fopen(filename, "w");
-
-    fprintf(file, "------------------------------------------------------\n");
-    fprintf(file, "Bagage appartenant à %s %s\n", ticket->passenger.firstname, ticket->passenger.lastname);
-    fprintf(file, "Numero de bagage \t %d\n", ticket->luggages[index].id);
-    fprintf(file, "Poids : \t%fkg\n", ticket->luggages[index].weight);
-    if (ticket->vip == 1) {
-        fprintf(file, "Bagage prioritaire \n");
-    } else {
-        fprintf(file, "Bagage non prioritaire\n");
-    }
-    fprintf(file, "\n------------------------------------------------------");
-
-    fclose(file);
 }

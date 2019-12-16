@@ -155,7 +155,7 @@ void addPassenger(Flight* flights, Ticket ticket) {
     luggageCount += ticket.luggageCount;
 
     for (int j = 0; j < ticket.luggageCount; ++j) {
-        luggagesWeight += ticket.luggages[j].weight;
+        luggagesWeight += ticket.luggagesWeight[j];
     }
 
     // on remet tout dans le fichier puis on ajoute la nouvelle place dans le fichier

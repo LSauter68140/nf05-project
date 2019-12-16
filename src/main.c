@@ -18,26 +18,7 @@ int main() {
     tickets = parseTickets(&ticketCount);
     flights = parseFlights(&flightCount);
 
-    for(int i = 0; i < ticketCount; i++) {
-        displayTicket(tickets[i]);
-    }
-
-    // on ajoute un billet
-    addTicket(flights, flightCount);
-
-    /*
-    ticketCount++;
-    addTicket(flights, flightCount);
-
-    printf("Depot des bagages \n");
-    addLuggages(&tickets[ticketCount]);
-    sauvPlace(flights, tickets[ticketCount]);
-
-    printf("\nPassage de la frontiere");
-    frontiere(flights, tickets, ticketCount, flightCount);
-
-    displaySecurityInfo();
-    */
+    
 
     return EXIT_SUCCESS;
 }

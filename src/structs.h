@@ -2,11 +2,6 @@
 #define NF05_PROJECT_STRUCT_H
 
 typedef struct {
-    int id;         // numéro du bagage 1 ou 2 si vip ou non
-    float weight;   // en kg max 20kg par bagages et 5kg pour celui de la soute
-} Luggage;
-
-typedef struct {
     int day, month, year, hour, minute;
 } Date;
 
@@ -29,8 +24,8 @@ typedef struct {
     char destination[50];
     int vip;            // 0 pas VIP, 1 VIP
     int luggageCount;   // jusqu'à 3 bagages soute (un bagage cabine d'office)
+    float luggagesWeight[2]; // un passager peut en avoir 2 maximum
     Seat seat;
-    Luggage luggages[2]; // un passager peut en avoir 2 maximum
 } Ticket;
 
 typedef struct {

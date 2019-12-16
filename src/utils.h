@@ -10,10 +10,6 @@
 void formatDate(Date date, char* formattedDate);
 char* formatGender(int gender);
 
-// Files
-void writeFile(char* filename, char* content);
-void appendFile(char* filename, char* content);
-
 // Inputs
 void getLine(char* line, int maxLength);
 

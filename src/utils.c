@@ -17,26 +17,6 @@ char* formatGender(int gender) {
     }
 }
 
-void writeFile(char* filename, char* content) {
-    FILE* file = NULL;
-    file = fopen(filename, "w");
-
-    if(file != NULL) {
-        fputs(content, file);
-        fclose(file);
-    }
-}
-
-void appendFile(char* filename, char* content) {
-    FILE* file = NULL;
-    file = fopen(filename, "a");
-
-    if(file != NULL) {
-        fputs(content, file);
-        fclose(file);
-    }
-}
-
 void getLine(char* line, int maxLength) {
     int ch, len;
 
