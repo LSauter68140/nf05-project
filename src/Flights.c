@@ -115,7 +115,7 @@ int getFreeSeatCount(Flight flight) {
     return freeSeats;
 }
 
-void addPassenger(Flight* flights, Ticket ticket) {
+void saveSeat(Flight* flights, Ticket ticket) {
     char destinationFilename[75];
     FILE *destinationFile;
     int freeSeats, vipCount, luggageCount, lastData;

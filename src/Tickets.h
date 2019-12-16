@@ -10,7 +10,7 @@
 #include "Flights.h"
 
 Ticket* parseTickets(int* ticketCount);
-void addTicket(Flight* flight, int flightCount);
+void addTicket(Flight* flights, int flightCount, Ticket* tickets, int ticketCount);
 void displayTicket(Ticket ticket);
 void generateTicket(Ticket* ticket);
 void generateTicketId(const Ticket* ticket, char* ticketId);

@@ -32,7 +32,7 @@ Ticket* parseTickets(int* ticketCount) {
     return tickets;
 }
 
-void addTicket(Flight *flights, int flightCount) {
+void addTicket(Flight* flights, int flightCount, Ticket* tickets, int ticketCount) {
     char choice;
     int randomSeat, flightChoice, i;
     Ticket ticket;
@@ -152,6 +152,10 @@ void addTicket(Flight *flights, int flightCount) {
     printf("\n\n/!\\ Prevoir 2h avant le depart pour l'embarquement et le passage de la securite\n\n");
 
     generateTicket(&ticket);
+
+    // On ajoute le passager au tableau de passagers
+    tickets = realloc(tickets, ticketCount + 1);
+    tickets[ticketCount++] = ticket;
 }
 
 void displayTicket(Ticket ticket) {
