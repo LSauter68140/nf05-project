@@ -10,7 +10,7 @@
 Flight* parseFlights(int* flightCount);
 void displaySeats(Flight flight);
 int getFreeSeatCount(Flight flight);
-void saveSeat(Flight* flights, Ticket ticket);
+void saveSeat(Flight* flight, Ticket* ticket);
 void displaySecurityInfo();
 void checkFrontiers(Flight* flights, Ticket* tickets, int ticketCount, int flightCount);
 int sortFlights(const void* a, const void* b);

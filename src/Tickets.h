@@ -12,8 +12,8 @@
 Ticket* parseTickets(int* ticketCount);
 void addTicket(Flight* flights, int flightCount, Ticket* tickets, int ticketCount);
 void displayTicket(Ticket ticket);
-void generateTicket(Ticket* ticket);
-void generateTicketId(const Ticket* ticket, char* ticketId);
+void saveTicket(Ticket* ticket);
+void getTicketId(const Ticket* ticket, char* ticketId);
 
 void addLuggages(Ticket* ticket);
 void generateLuggage(Ticket* ticket, int index);

@@ -5,12 +5,12 @@ Flight* parseFlights(int* flightCount) {
 
     FILE* flightsFile;
     FILE* destinationFile;
-    int occupiedSeatCount, seatX, seatY, seatVip, i;
+    int seatX, seatY, seatVip, i;
     char destinationFilename[75];
 
     flightsFile = fopen("donnees/avion.txt", "r");
 
-    for(i = 0; feof(flightsFile) == 0; i++) {
+    for(i = 0; !feof(flightsFile); i++) {
         flights = (Flight*) realloc(flights, (i + 1) * sizeof(Flight));
         fscanf(flightsFile, "%s", flights[i].destination);
         fscanf(flightsFile, "%s", flights[i].plane);
@@ -41,10 +41,9 @@ Flight* parseFlights(int* flightCount) {
         if (destinationFile != NULL) {
             fscanf(destinationFile, "%f", &flights[i].luggagesWeight);
             fscanf(destinationFile, "%d", &flights[i].onboardCount);
-            occupiedSeatCount = flights[i].rowCount * flights[i].columnCount - getFreeSeatCount(flights[i]);
 
             // on recupere les places qui sont déjà occupées et on le met dans l'avion
-            for (int i = 0; i < occupiedSeatCount; i++) {
+            for (int j = 0; !feof(destinationFile); j++) {
                 fscanf(destinationFile, "%d", &seatX);
                 fscanf(destinationFile, "%d", &seatY);
                 fscanf(destinationFile, "%d", &seatVip);
@@ -57,7 +56,7 @@ Flight* parseFlights(int* flightCount) {
             destinationFile = fopen(destinationFilename, "w+");
             flights[i].luggagesWeight = 0;
             flights[i].onboardCount = 0;
-            fprintf(destinationFile, "%f %d\n", flights[i].luggagesWeight, flights[i].onboardCount);
+            fprintf(destinationFile, "%f %d", flights[i].luggagesWeight, flights[i].onboardCount);
         }
         fclose(destinationFile);
     }
@@ -106,7 +105,7 @@ int getFreeSeatCount(Flight flight) {
 
     for(int i = 0; i < flight.rowCount; i++) {
         for(int j = 0; j < flight.columnCount; j++) {
-            if(flight.seats[i][j] == 0) {
+            if (flight.seats[i][j] == 0) {
                 freeSeats++;
             }
         }
@@ -115,58 +114,17 @@ int getFreeSeatCount(Flight flight) {
     return freeSeats;
 }
 
-void saveSeat(Flight* flights, Ticket ticket) {
+void saveSeat(Flight* flight, Ticket* ticket) {
     char destinationFilename[75];
     FILE *destinationFile;
-    int freeSeats, vipCount, luggageCount, lastData;
-    float luggagesWeight;
-    int destinationChoice = 0, occupiedSeatCount;
 
-    // on recupere la destination du vol choisi par le passager
-    while (strcmp(flights[destinationChoice].destination, ticket.destination) != 0) {
-        destinationChoice++;
-    }
-
-    sprintf(destinationFilename, "donnees/destination/%s.txt", flights[destinationChoice].destination);
-    destinationFile = fopen(destinationFilename, "r");
-
-    if (destinationFile == NULL) {
-        printf("Erreur : fichier de vol manquant");
-        return;
-    }
-
-    // on recupere les 4 valeurs fixes
-    fscanf(destinationFile, "%d %d %d %f %d", &freeSeats, &vipCount, &luggageCount, &luggagesWeight, &lastData);
-
-    int **seats = (int **) malloc(freeSeats * sizeof(int *)); // on fait tableau d'entier avec le nbr de place prises
-    occupiedSeatCount = flights[destinationChoice].rowCount * flights[destinationChoice].columnCount - freeSeats;
-    for (int i = 0; i < occupiedSeatCount; i++) {
-        seats[i] = (int *) malloc(3 * sizeof(int)); // une colonne x et y, plus priorité
-        // on recupère les places dans le fichier
-        fscanf(destinationFile, "%d %d %d", &seats[i][0], &seats[i][1], &seats[i][3]);
-    }
-    fclose(destinationFile); //on referme le fichier et apres on ecrase les données par dessus pour faire une modification
-
-    destinationFile = fopen(destinationFilename, "w");
-
-    // on met à jour les valeurs à changer
-    freeSeats--;
-    vipCount += ticket.vip;
-    luggageCount += ticket.luggageCount;
-
-    for (int j = 0; j < ticket.luggageCount; ++j) {
-        luggagesWeight += ticket.luggagesWeight[j];
-    }
-
-    // on remet tout dans le fichier puis on ajoute la nouvelle place dans le fichier
-    fprintf(destinationFile, "%d %d %d %f %d\n", freeSeats, vipCount, luggageCount, luggagesWeight, lastData);
-
-    for (int k = 0; k < occupiedSeatCount; ++k) {
-        fprintf(destinationFile, "%d %d %d\n", seats[k][0], seats[k][1], seats[k][3]);
-    }
-    fprintf(destinationFile, "%d %d %d\n", ticket.seat.x, ticket.seat.y, ticket.vip);
+    // On ajoute la place choisie
+    sprintf(destinationFilename, "donnees/destination/%s.txt", flight->destination);
+    destinationFile = fopen(destinationFilename, "a");
+    fprintf(destinationFile, "\n%d %d %d", ticket->seat.x, ticket->seat.y, ticket->vip);
     fclose(destinationFile);
-    printf("\nEmbarquement enregistre");
+
+    printf("La place a bien ete enregistree.\n");
 }
 
 void displaySecurityInfo() {
