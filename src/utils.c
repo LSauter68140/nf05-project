@@ -40,3 +40,19 @@ void getLine(char* line, int maxLength) {
         }
     }
 }
+
+void getValue(char* format, void* value) {
+    scanf(format, value);
+
+    // Clear others characters until \n and \n itself
+    while(getchar() != '\n');
+}
+
+char getOneChar() {
+    char c = (char) getchar();
+
+    // Clear others characters until \n and \n itself
+    while(getchar() != '\n');
+
+    return c;
+}

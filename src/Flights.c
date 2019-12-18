@@ -70,13 +70,13 @@ Flight* parseFlights(int* flightCount) {
 
 }
 
-void displaySeats(Flight flight) {
-    int x = flight.rowCount;
-    int y = flight.columnCount;
+void displaySeats(Flight* flight) {
+    int x = flight->rowCount;
+    int y = flight->columnCount;
 
     printf("\n. = libre");
-    printf("\n1 = occupée");
-    printf("\n2 = occupée par un VIP");
+    printf("\n1 = occupee");
+    printf("\n2 = occupee par un VIP");
 
     printf("\n\n\t    ");
 
@@ -93,25 +93,55 @@ void displaySeats(Flight flight) {
         for (int j = 0; j < x; ++j) {
             // We replace free seats by dots to be more lisible
             // `'0' + seat` is used here to parse an integer to a character
-            char seat = flight.seats[j][i] != 0 ? '0' + flight.seats[j][i] : '.';
+            char seat = flight->seats[j][i] != 0 ? '0' + flight->seats[j][i] : '.';
             printf("%c  ", seat);
         }
     }
     printf("\n");
 }
 
-int getFreeSeatCount(Flight flight) {
+void displayFlightsList(Flight* flights, int flightCount) {
+    for (int i = 0; i < flightCount; i++) {
+        char date[16];
+        formatDate(flights[i].date, date);
+
+        printf("%d)", i + 1);
+        printf("\tDestination : %s\n", flights[i].destination);
+        printf("\tModele d'avion : %s\n", flights[i].plane);
+        printf("\tDepart : %s\n\n", date);
+    }
+}
+
+void displayAvailableFlightsList(Flight* flights, int flightCount) {
+    for (int i = 0; i < flightCount && getFreeSeatCount(&flights[i]) > 0; i++) {
+        char date[16];
+        formatDate(flights[i].date, date);
+
+        printf("%d)", i + 1);
+        printf("\tDestination : %s\n", flights[i].destination);
+        printf("\tModele d'avion : %s\n", flights[i].plane);
+        printf("\tDepart : %s\n\n", date);
+    }
+}
+
+int getFreeSeatCount(Flight* flight) {
     int freeSeats = 0;
 
-    for(int i = 0; i < flight.rowCount; i++) {
-        for(int j = 0; j < flight.columnCount; j++) {
-            if (flight.seats[i][j] == 0) {
+    for(int i = 0; i < flight->rowCount; i++) {
+        for(int j = 0; j < flight->columnCount; j++) {
+            if (flight->seats[i][j] == 0) {
                 freeSeats++;
             }
         }
     }
 
     return freeSeats;
+}
+
+int getAvailableFlightCount(Flight* flights, int flightCount) {
+    int i;
+    for (i = 0; i < flightCount && getFreeSeatCount(&flights[i]) > 0; i++);
+    return i;
 }
 
 void saveSeat(Flight* flight, Ticket* ticket) {
@@ -123,16 +153,17 @@ void saveSeat(Flight* flight, Ticket* ticket) {
     destinationFile = fopen(destinationFilename, "a");
     fprintf(destinationFile, "\n%d %d %d", ticket->seat.x, ticket->seat.y, ticket->vip);
     fclose(destinationFile);
+}
 
-    printf("La place a bien ete enregistree.\n");
+void boardFlight(Flight* flights, int flightCount, Ticket* tickets, int ticketCount) {
 }
 
 void displaySecurityInfo() {
-    printf("\nVous allez passer la securite, vous devez enlever les objets suivant: \n");
+    printf("\nVous allez passer la securite, vous devez enlever les objets suivants :\n");
     printf("----------------------------------------------------------------------\n");
-    printf("|\tTout produit liquide, parfum, gel douche, shampoing, lotion, dentifrice, >100ml chacun\n");
-    printf("|\tArme à feu ou  munition ou cartouche pour armes de chasse ou de sport... Y compris explosif\n");
-    printf("|\tArme blanche soit tout objet contondant, coupant qu'il soit métallique ou non (ciseaux, lame, cutter...)\n");
+    printf("|\tTout produit liquide, parfum, gel douche, shampooing, lotion, dentifrice, >100ml chacun\n");
+    printf("|\tArme à feu, munition ou cartouche pour armes de chasse ou de sport... Y compris explosif\n");
+    printf("|\tArme blanche, soit tout objet contondant, coupant qu'il soit metallique ou non (ciseaux, lame, cutter...)\n");
     printf("|\tTout produit inflamable, acide, pesticide....\n");
     printf("|\tBatterie lithuim > 160 Wh\n");
     printf("----------------------------------------------------------------------\n");
@@ -184,5 +215,5 @@ void checkFrontiers(Flight* flights, Ticket* tickets, int ticketCount, int fligh
 }
 
 int sortFlights(const void* a, const void* b) {
-    return getFreeSeatCount(*(Flight*)a) < getFreeSeatCount(*(Flight*)b);
+    return getFreeSeatCount((Flight*)a) < getFreeSeatCount((Flight*)b);
 }
