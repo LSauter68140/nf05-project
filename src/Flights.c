@@ -156,6 +156,51 @@ void saveSeat(Flight* flight, Ticket* ticket) {
 }
 
 void boardFlight(Flight* flights, int flightCount, Ticket* tickets, int ticketCount) {
+    Ticket** flightTickets;
+    int flightIndex, ticketIndex, flightTicketIndex = 0;
+    int flightTicketCount;
+
+    displayFlightsList(flights, flightCount);
+    do {
+        printf("Quel vol voulez-vous faire embarquer ? ");
+        getValue("%d", &flightIndex);
+    } while(flightIndex < 1 || flightIndex > flightCount);
+    flightIndex--;
+
+    // On retrouve tous les billets de ce vol
+    flightTickets = (Ticket**) malloc(flights[flightIndex].rowCount * flights[flightIndex].columnCount * sizeof(Ticket**));
+
+    for(int i = 0; i < ticketCount; i++) {
+        if(strcmp(tickets[i].destination, flights[flightIndex].destination) == 0) {
+            flightTickets[flightTicketIndex++] = &tickets[i];
+        }
+    }
+    flightTicketCount = flightTicketIndex;
+
+    // On embarque les passagers un par un
+    while(flightTicketCount > 0) {
+        printf("\n");
+        for(int i = 0; i < flightTicketCount; i++) {
+            printf("%d) %s %s\n", i + 1, flightTickets[i]->passenger.lastname, flightTickets[i]->passenger.firstname);
+        }
+        do {
+            printf("Quel passager voulez-vous embarquer ? ");
+            getValue("%d", &ticketIndex);
+        } while(ticketIndex < 1 || ticketIndex > flightTicketCount);
+        ticketIndex--;
+
+        // Le passager peut maintenant déposer des bagages en soute
+        addLuggages(flightTickets[ticketIndex]);
+
+        // On enlève le billet du tableau des passagers à embarquer
+        for(int i = ticketIndex; i < flightTicketCount; i++) {
+            // On décale toutes valeurs dans le tableau
+            flightTickets[ticketIndex] = flightTickets[ticketIndex + 1];
+        }
+        flightTicketCount--;
+    }
+
+    printf("\n\nTous les passagers du vol ont bien embarqué. Bon voyage !\n");
 }
 
 void displaySecurityInfo() {

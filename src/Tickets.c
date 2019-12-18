@@ -252,14 +252,14 @@ void getTicketId(const Ticket* ticket, char* ticketId) {
 }
 
 void addLuggages(Ticket* ticket) {
-    printf("Vous pouvez deposer %d bagages en soute.\n", ticket->luggageCount);
+    printf("\n\tVous pouvez deposer %d bagage%s en soute.\n", ticket->luggageCount, ticket->luggageCount > 1 ? "s" : "");
 
     for (int i = 0; i < ticket->luggageCount; ++i) {
-        char filename[20] = "Ticket ";
-        sprintf(filename, "Ticket %d.txt", i + 1);
+        char filename[32];
+        sprintf(filename, "donnees/Ticket %d.txt", i + 1);
 
         // Get luggage info
-        printf("Poids de votre bagage en kg ? (max 20kg sinon supplement) : ");
+        printf("\tPoids du bagage n°%d en kg (max 20kg sinon supplement) : ", i + 1);
         getValue("%f", &ticket->luggagesWeight[i]);
 
         // Generate file
@@ -278,5 +278,12 @@ void addLuggages(Ticket* ticket) {
         fprintf(file, "\n------------------------------------------------------");
 
         fclose(file);
+    }
+
+    if(ticket->luggageCount > 1) {
+        printf("\tVos tickets bagages ont ete generes et sont disponibles dans le dossier \"donnees\"");
+    }
+    else if(ticket->luggageCount == 1) {
+        printf("\tVotre ticket bagage a ete genere et est disponible dans le dossier \"donnees\"");
     }
 }
