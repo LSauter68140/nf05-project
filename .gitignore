@@ -1,7 +1,11 @@
 /cmake-build-debug
 /cmake-build-release
 /CMakeFiles
+/build
 /.idea
+/.vscode
+
+/donnees
 
 Makefile
 CMakeCache.txt

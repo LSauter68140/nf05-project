@@ -4,4 +4,6 @@ project(nf05_project C)
 # Use C11 standard
 set(CMAKE_C_STANDARD 11)
 
-add_executable(nf05_project src/main.c)
+file(GLOB nf05_project_sources "src/*.c")
+
+add_executable(nf05_project ${nf05_project_sources})
