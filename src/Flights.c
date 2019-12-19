@@ -1,7 +1,7 @@
 #include "Flights.h"
 
 Flight *parseFlights(int *flightCount) {
-    Flight *flights = (Flight *) malloc(0);
+    Flight *flights = malloc(0);
 
     FILE *flightsFile;
     FILE *destinationFile;
@@ -11,7 +11,7 @@ Flight *parseFlights(int *flightCount) {
     flightsFile = fopen("data/flights.txt", "r");
 
     for (i = 0; !feof(flightsFile); i++) {
-        flights = (Flight *) realloc(flights, (i + 1) * sizeof(Flight));
+        flights = realloc(flights, (i + 1) * sizeof(Flight));
         fscanf(flightsFile, "%s", flights[i].destination);
         fscanf(flightsFile, "%s", flights[i].plane);
         fscanf(flightsFile, "%s", flights[i].flightId);
@@ -207,7 +207,7 @@ void boardFlight(Flight *flights, int *flightCount, Ticket *tickets, int ticketC
     flightIndex--;
 
     // On retrouve tous les billets de ce vol
-    flightTickets = (Ticket *) malloc(flights[flightIndex].rowCount * flights[flightIndex].columnCount * sizeof(Ticket *));
+    flightTickets = malloc(flights[flightIndex].rowCount * flights[flightIndex].columnCount * sizeof(Ticket *));
 
     displaySecurityInfo(flights[flightIndex]);
 
@@ -430,14 +430,14 @@ int checkFrontiers(Ticket tickets, int flightCount) {
     int j;
     char hasVisa;
 
-    char ***nationalities = (char ***) malloc(flightCount * sizeof(char **));
+    char ***nationalities = malloc(flightCount * sizeof(char **));
     for (int i = 0; i < flightCount; i++) {
-        nationalities[i] = (char **) malloc(2 * sizeof(char *));
+        nationalities[i] = malloc(2 * sizeof(char *));
     }
     for (int i = 0; i < flightCount; i++) {
         for (int k = 0; k < 2; k++) {
             // taille de 50 caractères max pour une destination
-            nationalities[i][k] = (char *) malloc(50 * sizeof(char));
+            nationalities[i][k] = malloc(50 * sizeof(char));
         }
     }
 
@@ -488,5 +488,5 @@ int checkFrontiers(Ticket tickets, int flightCount) {
 }
 
 int sortFlights(const void *a, const void *b) {
-    return getFreeSeatCount((Flight *) a) < getFreeSeatCount((Flight *) b);
+    return getFreeSeatCount(a) < getFreeSeatCount(b);
 }
