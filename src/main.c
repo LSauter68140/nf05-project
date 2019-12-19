@@ -94,5 +94,9 @@ int main() {
         printf("\n\n\n\n\n");
     } while(action != 'Q' && action !='q');
 
+    // Free memory
+    free(flights);
+    free(tickets);
+
     return EXIT_SUCCESS;
 }

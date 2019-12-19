@@ -1,7 +1,7 @@
 #include "Flights.h"
 
 Flight *parseFlights(int *flightCount) {
-    Flight *flights = (Flight *) malloc(0);
+    Flight *flights = malloc(0);
 
     FILE *flightsFile;
     FILE *destinationFile;
@@ -11,7 +11,7 @@ Flight *parseFlights(int *flightCount) {
     flightsFile = fopen("data/flights.txt", "r");
 
     for (i = 0; !feof(flightsFile); i++) {
-        flights = (Flight *) realloc(flights, (i + 1) * sizeof(Flight));
+        flights = realloc(flights, (i + 1) * sizeof(Flight));
         fscanf(flightsFile, "%s", flights[i].destination);
         fscanf(flightsFile, "%s", flights[i].plane);
         fscanf(flightsFile, "%s", flights[i].flightId);
@@ -75,7 +75,6 @@ Flight *parseFlights(int *flightCount) {
 
     *flightCount = i;
     return flights;
-
 }
 
 void displaySeats(Flight *flight) {
@@ -211,7 +210,7 @@ void boardFlight(Flight *flights, int *flightCount, Ticket *tickets, int ticketC
     flightIndex--;
 
     // On retrouve tous les billets de ce vol
-    flightTickets = (Ticket *) malloc(flights[flightIndex].rowCount * flights[flightIndex].columnCount * sizeof(Ticket *));
+    flightTickets = malloc(flights[flightIndex].rowCount * flights[flightIndex].columnCount * sizeof(Ticket *));
 
     displaySecurityInfo(flights[flightIndex]);
 
@@ -431,17 +430,16 @@ void displaySecurityInfo(Flight flight) {
 
 int checkFrontiers(Ticket tickets, int flightCount) {
     FILE *nationalitiesFile;
-    int j;
+    int j, result = 0;
     char hasVisa;
 
-    char ***nationalities = (char ***) malloc(flightCount * sizeof(char **));
+    char ***nationalities = malloc(flightCount * sizeof(char **));
     for (int i = 0; i < flightCount; i++) {
-        nationalities[i] = (char **) malloc(2 * sizeof(char *));
-    }
-    for (int i = 0; i < flightCount; i++) {
+        nationalities[i] = malloc(2 * sizeof(char *));
+
         for (int k = 0; k < 2; k++) {
             // taille de 50 caractères max pour une destination
-            nationalities[i][k] = (char *) malloc(50 * sizeof(char));
+            nationalities[i][k] = malloc(50 * sizeof(char));
         }
     }
 
@@ -449,48 +447,58 @@ int checkFrontiers(Ticket tickets, int flightCount) {
     nationalitiesFile = fopen("data/nationalities.txt", "r");
     if (nationalitiesFile == NULL) {
         printf("Fichier data/nationalities.txt introuvable, veuillez reessayer\n");
-        return 0;
     }
-    
-    // On lit le fichier
-    rewind(nationalitiesFile);
-    for (int i = 0; i < flightCount; i++) {
-        fscanf(nationalitiesFile, "%s %s", nationalities[i][0], nationalities[i][1]);
-    }
-
-    for (j = 0; j < flightCount && strcmp(tickets.destination, nationalities[j][0]) != 0; ++j);
-
-    if (strcmp(tickets.destination, nationalities[j][0]) == 0) {
-        for(int i = 0; tickets.passenger.nationality[i]!= '\0'; i++) {
-            tickets.passenger.nationality[i] = tolower(tickets.passenger.nationality[i]); // si jamais il y a une majuscule
+    else {
+        // On lit le fichier
+        rewind(nationalitiesFile);
+        for (int i = 0; i < flightCount; i++) {
+            fscanf(nationalitiesFile, "%s %s", nationalities[i][0], nationalities[i][1]);
         }
 
-        printf("\tPassager : %s %s\n\tNationalite : %s\n\tDestination : %s\n\tNumero de billet : %s\n",
-                tickets.passenger.lastname, tickets.passenger.firstname, tickets.passenger.nationality,
-                tickets.destination, tickets.id);
+        for (j = 0; j < flightCount && strcmp(tickets.destination, nationalities[j][0]) != 0; ++j);
 
-        printf("\n--- Service des douanes ---\n");
+        if (strcmp(tickets.destination, nationalities[j][0]) == 0) {
+            for(int i = 0; tickets.passenger.nationality[i]!= '\0'; i++) {
+                tickets.passenger.nationality[i] = tolower(tickets.passenger.nationality[i]); // si jamais il y a une majuscule
+            }
 
-        if (strcmp(tickets.passenger.nationality, nationalities[j][1]) == 0) {
-            printf("--> Pas besoin de Visa\n");
-            return 1;
-        } else {
-            printf("--> Besoin de presenter un visa\n");
-            
-            do {
-                printf("\nEtes-vous bien en possession d'un visa a jour (O/N) ? ");
-                getValue("%c", &hasVisa);
-            } while(hasVisa != 'O' && hasVisa != 'o' && hasVisa != 'N' && hasVisa != 'n');
+            printf("\tPassager : %s %s\n\tNationalite : %s\n\tDestination : %s\n\tNumero de billet : %s\n",
+                    tickets.passenger.lastname, tickets.passenger.firstname, tickets.passenger.nationality,
+                    tickets.destination, tickets.id);
 
-            if (hasVisa == 'O' || hasVisa == 'o') {
-                return 1;
+            printf("\n--- Service des douanes ---\n");
+
+            if (strcmp(tickets.passenger.nationality, nationalities[j][1]) == 0) {
+                printf("--> Pas besoin de Visa\n");
+                result = 1;
+            } else {
+                printf("--> Besoin de presenter un visa\n");
+                
+                do {
+                    printf("\nEtes-vous bien en possession d'un visa a jour (O/N) ? ");
+                    getValue("%c", &hasVisa);
+                } while(hasVisa != 'O' && hasVisa != 'o' && hasVisa != 'N' && hasVisa != 'n');
+
+                if (hasVisa == 'O' || hasVisa == 'o') {
+                    result = 1;
+                }
             }
         }
     }
 
-    return 0;
+    // Free memory
+    for (int i = 0; i < flightCount; i++) {
+        for (int k = 0; k < 2; k++) {
+            free(nationalities[i][k]);
+        }
+
+        free(nationalities[i]);
+    }
+    free(nationalities);
+
+    return result;
 }
 
 int sortFlights(const void *a, const void *b) {
-    return getFreeSeatCount((Flight *) a) < getFreeSeatCount((Flight *) b);
+    return getFreeSeatCount(a) < getFreeSeatCount(b);
 }

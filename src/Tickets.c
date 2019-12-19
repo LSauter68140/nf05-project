@@ -1,7 +1,7 @@
 #include "Tickets.h"
 
 Ticket* parseTickets(int* ticketCount) {
-    Ticket* tickets = (Ticket*) malloc(0);
+    Ticket* tickets = malloc(0);
     int count = 0;
 
     FILE *ticketsFile;
@@ -16,7 +16,7 @@ Ticket* parseTickets(int* ticketCount) {
     if (ftell(ticketsFile) != 0) {
         fseek(ticketsFile, 0L, SEEK_SET);
         for (; !feof(ticketsFile); count++) {
-            tickets = (Ticket*) realloc(tickets, (count + 1) * sizeof(Ticket));
+            tickets = realloc(tickets, (count + 1) * sizeof(Ticket));
 
             // On recupère les infos du billet
             fscanf(ticketsFile, "%s %s %s %d %d %s %s %s %d %d %d %d", tickets[count].id,
