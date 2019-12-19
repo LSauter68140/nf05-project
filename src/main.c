@@ -6,6 +6,16 @@
 #include "Flights.h"
 #include "Tickets.h"
 
+/**
+ * \file          main.c
+ * \author    Valentin Peltier & Loïc Sauter
+ * \version   1.0
+ * \date       22 Decembre 2019
+ * \brief      Fichier principal du projet
+ *
+ * \details    On retrouve ici le menu qui permet d'acceder à toutes les fonctionnalitées du programme
+ */
+
 int main() {
     char action, skipWait;
     srand(time(NULL));

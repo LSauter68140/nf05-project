@@ -38,30 +38,34 @@ Flight *parseFlights(int *flightCount) {
 
         destinationFile = fopen(destinationFilename, "r+");
 
-        if (destinationFile != NULL) {
-            fscanf(destinationFile, "%f", &flights[i].luggagesWeight);
+       if (destinationFile != NULL) {
+           fscanf(destinationFile, "%f %d", &flights[i].luggagesWeight, &flights[i].luggagesNumber);
 
-            // on recupere les places qui sont déjà occupées et on le met dans l'avion
-            for (int j = 0; !feof(destinationFile); j++) {
-                fscanf(destinationFile, "%d", &seatX);
-                fscanf(destinationFile, "%d", &seatY);
-                fscanf(destinationFile, "%d", &seatVip);
+           // on recupere les places qui sont déjà occupées et on le met dans l'avion
+           for (int j = 0; !feof(destinationFile); j++) {
+               fscanf(destinationFile, "%d", &seatX);
+               fscanf(destinationFile, "%d", &seatY);
+               fscanf(destinationFile, "%d", &seatVip);
 
-                flights[i].seats[seatX][seatY] = seatVip + 1;
-            }
-        } else {
-            // Si le dossier n'existe pas, on le crée
-            struct stat st = {0};
-            if (stat("data/flights", &st) == -1) {
-                mkdir("data/flights", 0700);
-            }
+               flights[i].seats[seatX][seatY] = seatVip + 1;
+           }
+    } else {
+           // Si le dossier n'existe pas, on le crée
+         struct stat st = {0};
+           if (stat("data/flights", &st) == -1) {
+#ifdef _WIN32
+               mkdir("data/flights");
+#else
+               mkdir("data/flights", 0700);
+#endif
+           }
 
-            flights[i].luggagesWeight = 0;
+           flights[i].luggagesWeight = 0;
 
-            // on crée le fichier
-            destinationFile = fopen(destinationFilename, "w+");
-            fprintf(destinationFile, "%f", flights[i].luggagesWeight);
-        }
+           // on crée le fichier
+           destinationFile = fopen(destinationFilename, "w+");
+           fprintf(destinationFile, "%f", flights[i].luggagesWeight);
+    }
         fclose(destinationFile);
     }
     fclose(flightsFile);

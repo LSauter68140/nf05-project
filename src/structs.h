@@ -35,6 +35,7 @@ typedef struct {
     int seats[500][500];// vue 2d de haut des places de l'avion 1/2 occupé   0 -> libre on initialise le tableau à 0
     int rowCount, columnCount; // taille réelle de l'avion qu'on met lors de son initialisation
     float luggagesWeight; // somme du poids de tous les bagages
+    int luggagesNumber;
     Date date;
 } Flight;
 
