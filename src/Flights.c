@@ -110,7 +110,7 @@ void displaySeats(Flight *flight) {
 
 void displayFlightsList(Flight *flights, int flightCount) {
     for (int i = 0; i < flightCount; i++) {
-        char date[16];
+        char date[17];
         formatDate(flights[i].date, date);
 
         printf("%d)", i + 1);
@@ -122,7 +122,7 @@ void displayFlightsList(Flight *flights, int flightCount) {
 
 void displayAvailableFlightsList(Flight *flights, int flightCount) {
     for (int i = 0; i < flightCount && getFreeSeatCount(&flights[i]) > 0; ++i) {
-        char date[16];
+        char date[17];
         formatDate(flights[i].date, date);
 
         printf("%d)", i + 1);
