@@ -17,8 +17,11 @@ int getFreeSeatCount(Flight* flight);
 int getAvailableFlightCount(Flight* flights, int flightCount);
 void saveSeat(Flight* flight, Ticket* ticket);
 void boardFlight(Flight* flights, int flightCount, Ticket* tickets, int ticketCount);
-void displaySecurityInfo();
-void checkFrontiers(Flight* flights, Ticket* tickets, int ticketCount, int flightCount);
+void displaySecurityInfo(Flight flight);
+void checkFrontiers(Ticket tickets, int flightCount, int* checkVisa);
+void updatePassenger(Ticket *ticketTodelete, int flightTicketCount, Ticket *tickets, int *ticketCount);
+void updateFlight(Flight *flights, int flightCount, int flightIndex);
+void addFlight(Flight **flight, int *flightCount);
 int sortFlights(const void* a, const void* b);
 
 #endif // NF05_PROJECT_SEATS_H

@@ -7,7 +7,10 @@ Ticket* parseTickets(int* ticketCount) {
     FILE *ticketsFile;
     ticketsFile = fopen("donnees/passagers.txt", "r");
     if (ticketsFile == NULL) {
-        printf("Erreur : fichier donnees/passagers.txt introuvable, veuillez reessayer");
+        printf("Erreur : fichier donnees/passagers.txt introuvable on le recree");
+        fclose(ticketsFile);
+        ticketsFile = fopen("donnees/passagers.txt", "w");
+        fclose(ticketsFile);
         return 0;
     }
 
@@ -218,7 +221,7 @@ void saveTicket(Ticket* ticket) {
         fprintf(ticketsFile, "\n");
     }
 
-    fprintf(ticketsFile, "%s %s %s %d %d %s %s %s %d %d %d %d", ticket->id,
+    fprintf(ticketsFile, "%s %s %s %d %d %s %s %s %d %d %d %d\n", ticket->id,
         ticket->passenger.lastname, ticket->passenger.firstname, ticket->passenger.age, ticket->passenger.gender, ticket->passenger.nationality,
         ticket->passenger.passportNumber, ticket->destination, ticket->vip, ticket->luggageCount, ticket->seat.x, ticket->seat.y);
 
