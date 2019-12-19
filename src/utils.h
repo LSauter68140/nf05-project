@@ -3,6 +3,7 @@
 
 #include <string.h>
 #include <stdio.h>
+#include <stdlib.h>
 
 #include "structs.h"
 
@@ -13,6 +14,7 @@ char* formatGender(int gender);
 // Inputs
 void getLine(char* line, int maxLength);
 void getValue(char* format, void* value);
-char getOneChar();
+
+void clearScreen();
 
 #endif //NF05_PROJECT_UTILS_H

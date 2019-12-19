@@ -48,11 +48,10 @@ void getValue(char* format, void* value) {
     while(getchar() != '\n');
 }
 
-char getOneChar() {
-    char c = (char) getchar();
-
-    // Clear others characters until \n and \n itself
-    while(getchar() != '\n');
-
-    return c;
+void clearScreen() {
+#ifdef WINDOWS
+    system("cls");
+#else
+    printf("\033[H\033[J");
+#endif
 }

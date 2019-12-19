@@ -20,6 +20,7 @@ int main() {
     flights = parseFlights(&flightCount);
 
     do {
+        clearScreen();
         printf("============== Menu principal ==============\n");
 
         printf("\n1. Ajouter un billet");
@@ -33,13 +34,12 @@ int main() {
 
         printf("\n\n> Que voulez vous faire ? ");
 
-        action = getOneChar();
+        getValue("%c", &action);
 
         switch (action) {
             case '1':
                 printf("\n=== Ajout d'un billet ===\n\n");
                 addTicket(flights, flightCount, tickets, &ticketCount);
-                tickets = parseTickets(&ticketCount); // pour que le billet du passager soit affichable au cas ou on souhaiterait le visionner
                 break;
             case '2':
                 printf("\n=== Ajout d'un vol ===\n\n");
@@ -47,8 +47,7 @@ int main() {
                 break;
             case '3':
                 printf("\n=== Embarquement d'un vol ===\n\n");
-                boardFlight(flights, flightCount, tickets, ticketCount);
-                flights = parseFlights(&flightCount);
+                boardFlight(flights, &flightCount, tickets, ticketCount);
                 break;
             case '4':
                 printf("\n=== Affichage des billets ===\n\n");
@@ -56,7 +55,6 @@ int main() {
                 break;
             case '5':
                 printf("\n=== Affichage des vols disponibles ===\n\n");
-                printf("\n %d", flightCount);
                 displayAvailableFlightsList(flights, flightCount);
                 break;
             case '6':

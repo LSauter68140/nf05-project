@@ -5,7 +5,8 @@
 /.idea
 /.vscode
 
-/donnees
+/data/flights
+/data/passengers.txt
 
 Makefile
 CMakeCache.txt

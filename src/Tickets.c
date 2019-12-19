@@ -5,11 +5,9 @@ Ticket* parseTickets(int* ticketCount) {
     int count = 0;
 
     FILE *ticketsFile;
-    ticketsFile = fopen("donnees/passagers.txt", "r");
+    ticketsFile = fopen("data/passengers.txt", "r");
     if (ticketsFile == NULL) {
-        printf("Erreur : fichier donnees/passagers.txt introuvable on le recree");
-        fclose(ticketsFile);
-        ticketsFile = fopen("donnees/passagers.txt", "w");
+        ticketsFile = fopen("data/passengers.txt", "w");
         fclose(ticketsFile);
         return 0;
     }
@@ -91,7 +89,7 @@ void addTicket(Flight* flights, int flightCount, Ticket* tickets, int* ticketCou
 
     do {
         printf("\nVoulez-vous choisir votre place ? O/N : ");
-        choice = getOneChar();
+        getValue("%c", &choice);
     } while (choice != 'o' && choice != 'O' && choice != 'n' && choice != 'N');
 
     if (choice == 'o' || choice == 'O') {
@@ -151,7 +149,6 @@ void addTicket(Flight* flights, int flightCount, Ticket* tickets, int* ticketCou
 
     saveTicket(&ticket);
     saveSeat(&flights[flightIndex], &ticket);
-    printf("Votre billet a bien ete enregistre\n");
 
     // On ajoute le passager au tableau de passagers
     (*ticketCount)++;
@@ -210,9 +207,9 @@ void saveTicket(Ticket* ticket) {
     getTicketId(ticket, ticket->id);
 
     // On ajoute le billet à la liste
-    ticketsFile = fopen("donnees/passagers.txt", "a");
+    ticketsFile = fopen("data/passengers.txt", "a");
     if(ticketsFile == NULL) {
-        printf("Erreur : fichier donnees/passagers.txt introuvable, veuillez reessayer");
+        printf("Erreur : fichier data/passengers.txt introuvable, veuillez reessayer");
         return;
     }
 
@@ -221,7 +218,7 @@ void saveTicket(Ticket* ticket) {
         fprintf(ticketsFile, "\n");
     }
 
-    fprintf(ticketsFile, "%s %s %s %d %d %s %s %s %d %d %d %d\n", ticket->id,
+    fprintf(ticketsFile, "%s %s %s %d %d %s %s %s %d %d %d %d", ticket->id,
         ticket->passenger.lastname, ticket->passenger.firstname, ticket->passenger.age, ticket->passenger.gender, ticket->passenger.nationality,
         ticket->passenger.passportNumber, ticket->destination, ticket->vip, ticket->luggageCount, ticket->seat.x, ticket->seat.y);
 
@@ -259,7 +256,7 @@ void addLuggages(Ticket* ticket) {
 
     for (int i = 0; i < ticket->luggageCount; ++i) {
         char filename[32];
-        sprintf(filename, "donnees/Ticket %d.txt", i + 1);
+        sprintf(filename, "data/Ticket %d.txt", i + 1);
 
         // Get luggage info
         printf("\tPoids du bagage n°%d en kg (max 20kg sinon supplement) : ", i + 1);
@@ -284,9 +281,9 @@ void addLuggages(Ticket* ticket) {
     }
 
     if(ticket->luggageCount > 1) {
-        printf("\tVos tickets bagages ont ete generes et sont disponibles dans le dossier \"donnees\"");
+        printf("\tVos tickets bagages ont ete generes et sont disponibles dans le dossier \"data\"");
     }
     else if(ticket->luggageCount == 1) {
-        printf("\tVotre ticket bagage a ete genere et est disponible dans le dossier \"donnees\"");
+        printf("\tVotre ticket bagage a ete genere et est disponible dans le dossier \"data\"");
     }
 }
