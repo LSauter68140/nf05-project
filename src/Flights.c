@@ -5,7 +5,8 @@ Flight *parseFlights(int *flightCount) {
 
     FILE *flightsFile;
     FILE *destinationFile;
-    int seatX, seatY, seatVip, i;
+    int seatX, seatY, seatVip, i, luggagesCount;
+    float luggagesWeight;
     char destinationFilename[75];
 
     flightsFile = fopen("data/flights.txt", "r");
@@ -39,7 +40,7 @@ Flight *parseFlights(int *flightCount) {
         destinationFile = fopen(destinationFilename, "r+");
 
        if (destinationFile != NULL) {
-           fscanf(destinationFile, "%f %d", &flights[i].luggagesWeight, &flights[i].luggagesNumber);
+           fscanf(destinationFile, "%f %d", &luggagesWeight, &luggagesCount);
 
            // on recupere les places qui sont déjà occupées et on le met dans l'avion
            for (int j = 0; !feof(destinationFile); j++) {
@@ -60,11 +61,12 @@ Flight *parseFlights(int *flightCount) {
 #endif
            }
 
-           flights[i].luggagesWeight = 0;
+           luggagesWeight = 0;
+           luggagesCount = 0;
 
            // on crée le fichier
            destinationFile = fopen(destinationFilename, "w+");
-           fprintf(destinationFile, "%f", flights[i].luggagesWeight);
+           fprintf(destinationFile, "%f %d", luggagesWeight, luggagesCount);
     }
         fclose(destinationFile);
     }
@@ -313,7 +315,7 @@ void removeFlight(Flight *flights, int *flightCount, int flightIndex) {
     FILE *historyFile = fopen("data/history/flights.txt", "a+");
     FILE *destinationFile;
     char destinationFilename[70];
-    int passengerCount = 0, vipCount = 0;
+    int passengerCount = 0, vipCount = 0, luggagesCount;
     float luggagesWeight;
 
     // On ouvre le fichier du vol
@@ -324,8 +326,8 @@ void removeFlight(Flight *flights, int *flightCount, int flightIndex) {
         return;
     }
 
-    // on recupere le poids des bagages
-    fscanf(destinationFile, "%f", &luggagesWeight);
+    // on recupere le poids des bagages et leur nombre
+    fscanf(destinationFile, "%f %d", &luggagesWeight, &luggagesCount);
 
     while(!feof(destinationFile)) {
         int vip;
@@ -335,10 +337,10 @@ void removeFlight(Flight *flights, int *flightCount, int flightIndex) {
     }
 
     // On ajoute le vol dans le fichier de l'historique des vols
-    fprintf(historyFile, "%s %s %s %d %d %d %d %d %d %d %f %d %d\n", flights[flightIndex].destination, flights[flightIndex].plane,
+    fprintf(historyFile, "%s %s %s %d %d %d %d %d %d %d %f %d %d %d\n", flights[flightIndex].destination, flights[flightIndex].plane,
             flights[flightIndex].flightId, flights[flightIndex].rowCount, flights[flightIndex].columnCount,
             flights[flightIndex].date.day,flights[flightIndex].date.month, flights[flightIndex].date.year, flights[flightIndex].date.hour,
-            flights[flightIndex].date.minute, luggagesWeight, passengerCount, vipCount);
+            flights[flightIndex].date.minute, luggagesWeight, luggagesCount, passengerCount, vipCount);
 
     // On remet tous les vols dans le fichier, sauf celui à supprimer
     for (int i = 0; i < *flightCount; ++i) {

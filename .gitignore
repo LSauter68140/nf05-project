@@ -5,6 +5,7 @@
 /.idea
 /.vscode
 
+/docs
 /data/flights
 /data/passengers.txt
 
