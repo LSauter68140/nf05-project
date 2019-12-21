@@ -1,10 +1,6 @@
 #ifndef NF05_PROJECT_UTILS_H
 #define NF05_PROJECT_UTILS_H
 
-#include <string.h>
-#include <stdio.h>
-#include <stdlib.h>
-
 #include "structs.h"
 
 // Format
@@ -15,6 +11,11 @@ char* formatGender(int gender);
 void getLine(char* line, int maxLength);
 void getValue(char* format, void* value);
 
+// Outputs
+void print(char *format, ...);
 void clearScreen();
+
+// Misc
+int countOccurrences(char *string, char* search);
 
 #endif //NF05_PROJECT_UTILS_H

@@ -1,5 +1,10 @@
 #include "Tickets.h"
 
+#include <stdio.h>
+#include <stdlib.h>
+#include <ctype.h>
+#include <string.h>
+
 Ticket* parseTickets(int* ticketCount) {
     Ticket* tickets = malloc(0);
     int count = 0;
