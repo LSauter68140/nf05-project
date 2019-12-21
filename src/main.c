@@ -1,4 +1,5 @@
 #include <stdlib.h>
+#include <stdio.h>
 #include <time.h>
 
 #include "structs.h"
@@ -7,19 +8,18 @@
 #include "Tickets.h"
 
 /**
- * \file          main.c
- * \author    Valentin Peltier & Loïc Sauter
- * \version   1.0
- * \date       22 Decembre 2019
- * \brief      Fichier principal du projet
- *
- * \details    On retrouve ici le menu qui permet d'acceder à toutes les fonctionnalitées du programme
+ * @file        main.c
+ * @author      Valentin Peltier & Loïc Sauter
+ * @version     1.0
+ * @date        22 Decembre 2019
+ * @brief       Fichier principal du projet
+ * @details     On retrouve ici le menu qui permet d'accéder à toutes les fonctionnalités du programme
  */
 
 int main() {
     char action, skipWait;
     srand(time(NULL));
-    printf("Projet de NF05 - Gestion des passagers dans un aeroport\n\n");
+    clearScreen();
 
     // on commence par récupérer les avions et passagers
     Ticket* tickets;
@@ -30,7 +30,7 @@ int main() {
     flights = parseFlights(&flightCount);
 
     do {
-        clearScreen();
+        printf("Projet de NF05 - Gestion des passagers dans un aeroport\n\n");
         printf("============== Menu principal ==============\n");
 
         printf("\n1. Ajouter un billet");
@@ -77,18 +77,19 @@ int main() {
                 break;
             case 'Q':
             case 'q':
-                skipWait = 1;
-                break;
             default:
-                printf("\nNous avons pas compris votre requete, veuillez reessayer...\n\n");
                 skipWait = 1;
                 break;
         }
 
-        if(!skipWait) {
+        if (!skipWait) {
             printf("\n(Appuyez sur entree pour continuer...)");
             while(getchar() != '\n');
             skipWait = 0;
+        }
+
+        if (action != 'q' && action != 'Q') {
+            clearScreen();
         }
 
         printf("\n\n\n\n\n");

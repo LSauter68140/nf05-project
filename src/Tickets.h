@@ -1,10 +1,6 @@
 #ifndef NF05_PROJECT_TICKETS_H
 #define NF05_PROJECT_TICKETS_H
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <ctype.h>
-
 #include "structs.h"
 #include "utils.h"
 #include "Flights.h"

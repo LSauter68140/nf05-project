@@ -1,10 +1,6 @@
 #ifndef NF05_PROJECT_UTILS_H
 #define NF05_PROJECT_UTILS_H
 
-#include <string.h>
-#include <stdio.h>
-#include <stdlib.h>
-
 #include "structs.h"
 /**
  * @file utils.h
