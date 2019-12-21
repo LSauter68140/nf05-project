@@ -1,8 +1,13 @@
+#include <stdlib.h>
+#include <stdio.h>
+#include <time.h>
+
 #include "Flights.h"
+
 
 /**
  * @file           Flights.c
- * @author    Valentin Peltier & Loïc Sauter
+ * @authors    Valentin Peltier & Loïc Sauter
  * @version   1.0
  * @date       22 Decembre 2019
  * @brief      Fichier contenant toutes les fonctions en rapport avec les vol
