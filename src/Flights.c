@@ -1,6 +1,9 @@
 #include <stdlib.h>
 #include <stdio.h>
-#include <time.h>
+#include <string.h>
+#include <ctype.h>
+#include <sys/stat.h>
+#include <unistd.h>
 
 #include "Flights.h"
 
@@ -10,10 +13,10 @@
  * @authors    Valentin Peltier & Loïc Sauter
  * @version   1.0
  * @date       22 Decembre 2019
- * @brief      Fichier contenant toutes les fonctions en rapport avec les vol
- *
- */
-
+ * @brief      Fichier conten
+ant toutes les fonctions en rapport avec les vol
+*
+*/
 
 
 
@@ -56,35 +59,35 @@ Flight *parseFlights(int *flightCount) {
 
         destinationFile = fopen(destinationFilename, "r+");
 
-       if (destinationFile != NULL) {
-           fscanf(destinationFile, "%f %d", &luggagesWeight, &luggagesCount);
+        if (destinationFile != NULL) {
+            fscanf(destinationFile, "%f %d", &luggagesWeight, &luggagesCount);
 
-           // on recupere les places qui sont déjà occupées et on le met dans l'avion
-           for (int j = 0; !feof(destinationFile); j++) {
-               fscanf(destinationFile, "%d", &seatX);
-               fscanf(destinationFile, "%d", &seatY);
-               fscanf(destinationFile, "%d", &seatVip);
+            // on recupere les places qui sont déjà occupées et on le met dans l'avion
+            for (int j = 0; !feof(destinationFile); j++) {
+                fscanf(destinationFile, "%d", &seatX);
+                fscanf(destinationFile, "%d", &seatY);
+                fscanf(destinationFile, "%d", &seatVip);
 
-               flights[i].seats[seatX][seatY] = seatVip + 1;
-           }
-    } else {
-           // Si le dossier n'existe pas, on le crée
-         struct stat st = {0};
-           if (stat("data/flights", &st) == -1) {
+                flights[i].seats[seatX][seatY] = seatVip + 1;
+            }
+        } else {
+            // Si le dossier n'existe pas, on le crée
+            struct stat st = {0};
+            if (stat("data/flights", &st) == -1) {
 #ifdef _WIN32
-               mkdir("data/flights");
+                mkdir("data/flights");
 #else
-               mkdir("data/flights", 0700);
+                mkdir("data/flights", 0700);
 #endif
-           }
+            }
 
-           luggagesWeight = 0;
-           luggagesCount = 0;
+            luggagesWeight = 0;
+            luggagesCount = 0;
 
-           // on crée le fichier
-           destinationFile = fopen(destinationFilename, "w+");
-           fprintf(destinationFile, "%f %d", luggagesWeight, luggagesCount);
-    }
+            // on crée le fichier
+            destinationFile = fopen(destinationFilename, "w+");
+            fprintf(destinationFile, "%f %d", luggagesWeight, luggagesCount);
+        }
         fclose(destinationFile);
     }
     fclose(flightsFile);
@@ -519,5 +522,5 @@ int checkFrontiers(Ticket tickets, int flightCount) {
 }
 
 int sortFlights(const void *a, const void *b) {
-    return getFreeSeatCount(a) < getFreeSeatCount(b);
+    return getFreeSeatCount((Flight *)a) < getFreeSeatCount((Flight *)b);
 }
