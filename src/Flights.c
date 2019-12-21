@@ -1,5 +1,17 @@
 #include "Flights.h"
 
+/**
+ * @file           Flights.c
+ * @author    Valentin Peltier & Loïc Sauter
+ * @version   1.0
+ * @date       22 Decembre 2019
+ * @brief      Fichier contenant toutes les fonctions en rapport avec les vol
+ *
+ */
+
+
+
+
 Flight *parseFlights(int *flightCount) {
     Flight *flights = malloc(0);
 

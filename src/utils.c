@@ -1,4 +1,9 @@
 #include "utils.h"
+/**
+ * @file utils.c
+ * @brief Ce fichier contient toutes les fonctions de formatage de données et d'entrée
+ */
+
 
 void formatDate(Date date, char* formattedDate) {
     sprintf(formattedDate, "%d/%d/%d %dh%d", date.day, date.month, date.year, date.hour, date.minute);
