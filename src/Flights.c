@@ -1,12 +1,21 @@
+#include <stdlib.h>
+#include <stdio.h>
+#include <time.h>
+
 #include "Flights.h"
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <unistd.h>
-#include <ctype.h>
+
+/**
+ * @file           Flights.c
+ * @authors    Valentin Peltier & Loïc Sauter
+ * @version   1.0
+ * @date       22 Decembre 2019
+ * @brief      Fichier contenant toutes les fonctions en rapport avec les vol
+ *
+ */
+
+
+
 
 Flight *parseFlights(int *flightCount) {
     Flight *flights = malloc(0);
@@ -510,5 +519,5 @@ int checkFrontiers(Ticket tickets, int flightCount) {
 }
 
 int sortFlights(const void *a, const void *b) {
-    return getFreeSeatCount((Flight *)a) < getFreeSeatCount((Flight *)b);
+    return getFreeSeatCount(a) < getFreeSeatCount(b);
 }

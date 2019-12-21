@@ -5,6 +5,15 @@
 #include <ctype.h>
 #include <string.h>
 
+/**
+ * @file           Tickets.c
+ * @authors    Valentin Peltier & Loïc Sauter
+ * @version   1.0
+ * @date       22 Decembre 2019
+ * @brief      Fichier contenant toutes les fonctions en rapport avec les tickets et leur affichage
+ *
+ */
+
 Ticket* parseTickets(int* ticketCount) {
     Ticket* tickets = malloc(0);
     int count = 0;

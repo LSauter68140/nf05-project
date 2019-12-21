@@ -9,7 +9,7 @@
 
 /**
  * @file        main.c
- * @author      Valentin Peltier & Loïc Sauter
+ * @authors      Valentin Peltier & Loïc Sauter
  * @version     1.0
  * @date        22 Decembre 2019
  * @brief       Fichier principal du projet

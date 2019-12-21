@@ -1,4 +1,9 @@
 #include "utils.h"
+/**
+ * @file utils.c
+ * @brief Ce fichier contient toutes les fonctions de formatage de données et d'entrée
+ */
+
 
 #include <string.h>
 #include <stdio.h>

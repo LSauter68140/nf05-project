@@ -70,8 +70,8 @@ typedef struct {
     /// Nombre de rangées de sièges disponibles dans l'avion
     int rowCount;
     /// Nombre de colonnes de sièges disponibles dans l'avion
-    /// Date du départ du vol
     int columnCount;
+    /// Date du départ du vol
     Date date;
 } Flight;
 
