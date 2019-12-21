@@ -1,7 +1,19 @@
 #include "utils.h"
 
+#include <string.h>
+#include <stdio.h>
+#include <stdlib.h>
+
 void formatDate(Date date, char* formattedDate) {
-    sprintf(formattedDate, "%d/%d/%d %dh%d", date.day, date.month, date.year, date.hour, date.minute);
+    char day[3], month[3], year[5], hour[3], minute[3];
+
+    sprintf(day, "%s%d", date.day < 10 ? "0" : "", date.day);
+    sprintf(month, "%s%d", date.month < 10 ? "0" : "", date.month);
+    sprintf(year, "%s%d", date.year < 10 ? "0" : "", date.year);
+    sprintf(hour, "%s%d", date.hour < 10 ? "0" : "", date.hour);
+    sprintf(minute, "%s%d", date.minute < 10 ? "0" : "", date.minute);
+
+    sprintf(formattedDate, "%s/%s/%s %sh%s", day, month, year, hour, minute);
 }
 
 char* formatGender(int gender) {
@@ -49,7 +61,7 @@ void getValue(char* format, void* value) {
 }
 
 void clearScreen() {
-#ifdef WINDOWS
+#ifdef _WIN32
     system("cls");
 #else
     printf("\033[H\033[J");

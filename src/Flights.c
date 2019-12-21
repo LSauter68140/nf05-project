@@ -1,5 +1,13 @@
 #include "Flights.h"
 
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <unistd.h>
+#include <ctype.h>
+
 Flight *parseFlights(int *flightCount) {
     Flight *flights = malloc(0);
 
@@ -502,5 +510,5 @@ int checkFrontiers(Ticket tickets, int flightCount) {
 }
 
 int sortFlights(const void *a, const void *b) {
-    return getFreeSeatCount(a) < getFreeSeatCount(b);
+    return getFreeSeatCount((Flight *)a) < getFreeSeatCount((Flight *)b);
 }
