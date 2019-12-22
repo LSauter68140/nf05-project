@@ -74,7 +74,7 @@ void addTicket(Flight *flights, int flightCount, Ticket *tickets, int *ticketCou
     while(ticket.vip < 0 || ticket.vip > 1);
 
     do {
-        printf("\tNombre de bagages (1 maximum en classe economique, 2 en business) : ");
+        printf("\tNombre de bagages en soute (1 maximum en classe economique, 2 en business) : ");
         getValue("%d", &ticket.luggageCount);
     }
     // On met "+ vip" car les vip ont le droit à un bagage en plus
@@ -160,7 +160,7 @@ void addTicket(Flight *flights, int flightCount, Ticket *tickets, int *ticketCou
 
     // On ajoute le passager au tableau de passagers
     (*ticketCount)++;
-    tickets = realloc(tickets, *ticketCount);
+    tickets = realloc(tickets, *ticketCount * sizeof(Ticket *));
     tickets[*ticketCount] = ticket;
 }
 
