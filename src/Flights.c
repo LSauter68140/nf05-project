@@ -312,7 +312,7 @@ void addFlight() {
     } while(newFlight.date.minute < 0 || newFlight.date.minute > 59);
 
     // on le met dans le fichier avion
-    fseek(flightsFile, SEEK_END-1, SEEK_SET);
+    fseek(flightsFile, -1, SEEK_END);
     if (ftell(flightsFile)!= 0)
         fprintf(flightsFile,"\n");
     fprintf(flightsFile, "%s %s %s %d %d \t%d %d %d %d %d", newFlight.destination, newFlight.plane,
@@ -348,7 +348,6 @@ void addFlight() {
         }
         if (ftell(visaFile) !=0)
             fprintf(visaFile, "\n");
-        fprintf(visaFile, "%s %s", newFlight.destination, nationality);
     }
 
     fclose(visaFile);
@@ -471,15 +470,18 @@ int checkFrontiers(Ticket *ticket, int flightCount) {
     FILE *nationalitiesFile;
     int j, result = 0;
     char hasVisa;
-    
+
     char ***nationalities = (char***) malloc(flightCount * sizeof(char **));
+
     for (int i = 0; i < flightCount; i++) {
         nationalities[i] = (char**) malloc(2 * sizeof(char *));
+
         for (int k = 0; k < 2; k++) {
             // taille de 50 caractères max pour une destination
             nationalities[i][k] = (char*) malloc(50 * sizeof(char));
         }
     }
+
     // On ouvre le fichier qui associe les pays à leur nationalité
     printf("###%s\n", ticket->destination);
     nationalitiesFile = fopen("data/nationalities.txt", "r");
@@ -490,6 +492,7 @@ int checkFrontiers(Ticket *ticket, int flightCount) {
     else {
         // On lit le fichier
         rewind(nationalitiesFile);
+
         for (int i = 0; i < flightCount; i++) {
             fscanf(nationalitiesFile, "%s %s", nationalities[i][0], nationalities[i][1]);
         }

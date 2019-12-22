@@ -218,7 +218,7 @@ void saveTicket(Ticket *ticket) {
     }
 
     // Si le fichier n'est pas vide, on peut aller à la ligne suivante
-    fseek(ticketsFile, SEEK_END, SEEK_SET);
+    fseek(ticketsFile, -1, SEEK_END);
     if (ftell(ticketsFile) != 0) {
         fprintf(ticketsFile, "\n");
     }
@@ -293,14 +293,13 @@ void addLuggages(Ticket *ticket) {
 
     char filename[55];
     sprintf(filename, "data/ticketsPassenger/%s.txt", ticket->id);
-    printf("hellooo, %s", ticket->id);
     FILE *file;
     file = fopen(filename, "a+");
     if (file == NULL) {
         //fichier manquant on le recrée
         saveTicketPassenger(ticket);
     }
-    printf("world");
+
     fseek(file, SEEK_END, SEEK_SET); // on positionne le curseur à la fin
     if (ticket->luggageCount >0){
         fprintf(file, "\n\nVo%s bagage%s en soute :\n",ticket->luggageCount > 1 ? "s" : "tre",ticket->luggageCount > 1 ? "s" : "" );
@@ -341,7 +340,6 @@ void addLuggages(Ticket *ticket) {
 void saveTicketPassenger(Ticket *ticket) {
     FILE *ticketFile;
     char ticketFilename[40];
-    printf("bonjout %s", ticket->passenger.firstname);
     sprintf(ticketFilename, "data/ticketsPassenger/%s.txt", ticket->id);
     ticketFile = fopen(ticketFilename, "a");
     if(ticketFile == NULL)
