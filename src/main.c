@@ -29,6 +29,7 @@ int main() {
     tickets = parseTickets(&ticketCount);
     flights = parseFlights(&flightCount);
 
+
     do {
         printf("Projet de NF05 - Gestion des passagers dans un aeroport\n\n");
         printf("============== Menu principal ==============\n");
@@ -49,11 +50,13 @@ int main() {
         switch (action) {
             case '1':
                 printf("\n=== Ajout d'un billet ===\n\n");
-                addTicket(flights, flightCount, tickets, &ticketCount);
+                tickets = addTicket(flights, flightCount, tickets, &ticketCount);
+                printf("nom %s", tickets[17].passenger.lastname);
                 break;
             case '2':
                 printf("\n=== Ajout d'un vol ===\n\n");
-                addFlight(flights, &flightCount);
+                flights = addFlight(flights, &flightCount);
+                printf("anbr vol %d %s", flightCount, flights[8].destination);
                 break;
             case '3':
                 printf("\n=== Embarquement d'un vol ===\n\n");

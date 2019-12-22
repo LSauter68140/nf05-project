@@ -23,8 +23,9 @@ Ticket* parseTickets(int *ticketCount);
  * @param   flightCount     Nombre de vols dans @a flights
  * @param   tickets         Tableau de tous les billets. Le billet créé y sera ajouté
  * @param   ticketCount     Nombre de billets dans @a tickets. Il sera incrémenté de 1
+ * @return  tickets         Le tableau de billet avec celui qui vient d'être ajouté
  */
-void addTicket(Flight *flights, int flightCount, Ticket *tickets, int *ticketCount);
+Ticket* addTicket(Flight *flights, int flightCount, Ticket *tickets, int *ticketCount);
 
 /**
  * @brief    Affiche toutes les informations d'un billet
@@ -64,5 +65,11 @@ void getTicketId(Ticket *ticket, char *ticketId);
  * @param   ticket       Billet du passager. Permet d'y enregistrer le poids de son/ses bagage(s)
  */
 void addLuggages(Ticket *ticket);
+
+/**
+ * @brief   Enregistre le billet du passager dans un fichier unique dans @a data/ticketsPassenger
+ * @param   ticket       Billet du passager.
+ */
+void saveTicketPassenger(Ticket *ticket);
 
 #endif // NF05_PROJECT_TICKETS_H
