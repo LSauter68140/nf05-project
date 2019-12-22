@@ -73,7 +73,7 @@ void boardPassengers(Ticket *flightTickets, int flightTicketCount, int flightCou
  * @param   tickets         Tableau de billets
  * @param   ticketCount     Nombre de billets dans @a tickets
  */
-void boardFlight(Flight *flights, int *flightCount, Ticket *tickets, int ticketCount);
+void boardFlight(Flight *flights, int flightCount, Ticket *tickets, int ticketCount);
 
 /**
  * @brief   Affiche les infos concernant les objets interdits à bord d'un avion
@@ -95,22 +95,20 @@ int checkFrontiers(Ticket *ticket, int flightCount);
  * @param   tickets                 Tableau de tous les billets
  * @param   ticketCount             Nombre de billets dans @a tickets
  */
-void deleteTickets(Ticket *ticketsToDelete, int ticketsToDeleteCount, Ticket *tickets, int *ticketCount);
+void deleteTickets(Ticket *ticketsToDelete, int ticketsToDeleteCount, Ticket *tickets, int ticketCount);
 
 /**
- * @brief   Permet d'ajouter un vol avec toutes les infos le concenant
- * @param   flights     Tableau contenant tous les vols. Le nouveau vol va y être ajouté
- * @param   flightCount Nombre de vols dans @a flights
+ * @brief   Permet d'ajouter un vol avec toutes les infos le concernant
  */
-Flight *addFlight(Flight *flights, int *flightCount);
+void addFlight();
 
 /**
  * @brief   Supprime le vol du fichier @a data/flights.txt et le met dans le fichier @a data/history/flights.txt pour avoir un historique des vols
  * @param   flights      Tableau de tous les vols
- * @param   flightCount  Nombre d'avions dans @a flights. Va être décrémenté de 1
+ * @param   flightCount  Nombre d'avions dans @a flights
  * @param   flightIndex  Indice du vol à supprimer de @a flights
  */
-void removeFlight(Flight *flights, int *flightCount, int flightIndex);
+void removeFlight(Flight *flights, int flightCount, int flightIndex);
 
 /**
  * @brief   Compare deux vols en fonction du nombre de places libres

@@ -15,6 +15,7 @@ cmake_install.cmake
 /build
 /data/flights
 /data/passengers.txt
+/data/ticketsPassenger
 
 # Executables
 nf05_project

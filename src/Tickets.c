@@ -5,8 +5,6 @@
 #include <ctype.h>
 #include <string.h>
 
-
-
 Ticket *parseTickets(int *ticketCount) {
     Ticket *tickets = malloc(0);
     int count = 0;
@@ -46,7 +44,7 @@ Ticket *parseTickets(int *ticketCount) {
     return tickets;
 }
 
-Ticket* addTicket(Flight *flights, int flightCount, Ticket *tickets, int *ticketCount) {
+void addTicket(Flight *flights, int flightCount) {
     char choice;
     int randomSeat, flightIndex, i;
     Ticket ticket;
@@ -151,22 +149,14 @@ Ticket* addTicket(Flight *flights, int flightCount, Ticket *tickets, int *ticket
     if (getFreeSeatCount(&flights[flightIndex]) == 0) {
         // On retrie le tableau pour éviter de le réafficher la prochaine fois
         qsort(flights, flightCount, sizeof(Flight), compareFlights);
-        printf("\nFelicitation vous avez eu la derniere place !");
+        printf("\nFelicitations vous avez eu la derniere place !");
     }
 
     printf("\nVotre place est en (%d, %d)", ticket.seat.x + 1, ticket.seat.y + 1);
     printf("\n\n/!\\ Prevoir 2h avant le depart pour l'embarquement et le passage de la securite\n\n");
 
     saveTicket(&ticket);
-    // on le sauvegarde en .txt si jamais l'utilisateur veut le récupérer
-
-
     saveSeat(&flights[flightIndex], &ticket);
-
-
-    // On ajoute le passager au tableau de passagers
-    tickets = parseTickets(ticketCount);
-    return tickets;
 }
 
 void displayTicket(Ticket *ticket) {
@@ -214,10 +204,9 @@ void selectAndDisplayTicket(Ticket *tickets, int ticketCount) {
 }
 
 void saveTicket(Ticket *ticket) {
-
     FILE *ticketsFile = NULL;
     FILE *ticketFile;
-    char nameFile[15];
+    char ticketFilename[40];
     // On génère l'id du billet
     getTicketId(ticket, ticket->id);
 
@@ -242,12 +231,11 @@ void saveTicket(Ticket *ticket) {
 
     fclose(ticketsFile);
 
-
     // Si le dossier n'existe pas, on le crée
     createPath("data/ticketsPassenger");
-    sprintf(nameFile, "data/ticketsPassenger/%s.txt", ticket->id);
+    sprintf(ticketFilename, "data/ticketsPassenger/%s.txt", ticket->id);
 
-    ticketFile = fopen(nameFile, "a");
+    ticketFile = fopen(ticketFilename, "a");
     fprintf(ticketFile, "__________________________________________\n\n");
 
     if (ticket->vip) {
@@ -351,18 +339,16 @@ void addLuggages(Ticket *ticket) {
 }
 
 void saveTicketPassenger(Ticket *ticket) {
-
     FILE *ticketFile;
-    char nameFile[15];
+    char ticketFilename[40];
     printf("bonjout %s", ticket->passenger.firstname);
-    sprintf(nameFile, "data/ticketsPassenger/%s.txt", ticket->id);
-    ticketFile = fopen(nameFile, "a");
+    sprintf(ticketFilename, "data/ticketsPassenger/%s.txt", ticket->id);
+    ticketFile = fopen(ticketFilename, "a");
     if(ticketFile == NULL)
         // Si le dossier n'existe pas, on le crée
         createPath("data/ticketsPassenger");
 
     fprintf(ticketFile, "__________________________________________\n\n");
-
 
     if (ticket->vip == 2) {
         fprintf(ticketFile,"Felicitation vous etes VIP !\n");
