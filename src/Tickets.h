@@ -23,8 +23,9 @@ Ticket* parseTickets(int *ticketCount);
  * @param   flightCount     Nombre de vols dans @a flights
  * @param   tickets         Tableau de tous les billets. Le billet créé y sera ajouté
  * @param   ticketCount     Nombre de billets dans @a tickets. Il sera incrémenté de 1
+ * @return  tickets         Le tableau de billet avec celui qui vient d'être ajouté
  */
-void addTicket(Flight *flights, int flightCount, Ticket *tickets, int *ticketCount);
+Ticket* addTicket(Flight *flights, int flightCount, Ticket *tickets, int *ticketCount);
 
 /**
  * @brief    Affiche toutes les informations d'un billet

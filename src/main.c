@@ -28,12 +28,7 @@ int main() {
 
     tickets = parseTickets(&ticketCount);
     flights = parseFlights(&flightCount);
-    if (flightCount == 1){
-        flights = parseFlights(&ticketCount);
-        // il se peut qu'il y est des bugs lors de la création de tout les fichiers pour la 1ere ouverture du programme
-    }
 
-    //printf("azert |%s| vol %d", flights[0].destination, flightCount);
 
     do {
         printf("Projet de NF05 - Gestion des passagers dans un aeroport\n\n");
@@ -55,7 +50,8 @@ int main() {
         switch (action) {
             case '1':
                 printf("\n=== Ajout d'un billet ===\n\n");
-                addTicket(flights, flightCount, tickets, &ticketCount);
+                tickets = addTicket(flights, flightCount, tickets, &ticketCount);
+                printf("nom %s", tickets[17].passenger.lastname);
                 break;
             case '2':
                 printf("\n=== Ajout d'un vol ===\n\n");

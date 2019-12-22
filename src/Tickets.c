@@ -46,7 +46,7 @@ Ticket *parseTickets(int *ticketCount) {
     return tickets;
 }
 
-void addTicket(Flight *flights, int flightCount, Ticket *tickets, int *ticketCount) {
+Ticket* addTicket(Flight *flights, int flightCount, Ticket *tickets, int *ticketCount) {
     char choice;
     int randomSeat, flightIndex, i;
     Ticket ticket;
@@ -165,9 +165,8 @@ void addTicket(Flight *flights, int flightCount, Ticket *tickets, int *ticketCou
 
 
     // On ajoute le passager au tableau de passagers
-    (*ticketCount)++;
-    tickets = realloc(tickets, *ticketCount);
-    tickets[*ticketCount] = ticket;
+    tickets = parseTickets(ticketCount);
+    return tickets;
 }
 
 void displayTicket(Ticket *ticket) {
@@ -273,7 +272,7 @@ void saveTicket(Ticket *ticket) {
 
     fclose(ticketFile);
 
-    printf("\nVotre Billet est disponible a l'adresse %s\n", nameFile);
+    printf("\nVotre Billet est disponible a l'adresse data/ticketsPassenger\n");
 }
 
 void getTicketId(Ticket *ticket, char *ticketId) {
@@ -306,13 +305,14 @@ void addLuggages(Ticket *ticket) {
 
     char filename[55];
     sprintf(filename, "data/ticketsPassenger/%s.txt", ticket->id);
-
+    printf("hellooo, %s", ticket->id);
     FILE *file;
     file = fopen(filename, "a+");
     if (file == NULL) {
         //fichier manquant on le recrée
         saveTicketPassenger(ticket);
     }
+    printf("world");
     fseek(file, SEEK_END, SEEK_SET); // on positionne le curseur à la fin
     if (ticket->luggageCount >0){
         fprintf(file, "\n\nVo%s bagage%s en soute :\n",ticket->luggageCount > 1 ? "s" : "tre",ticket->luggageCount > 1 ? "s" : "" );
@@ -354,7 +354,7 @@ void saveTicketPassenger(Ticket *ticket) {
 
     FILE *ticketFile;
     char nameFile[15];
-
+    printf("bonjout %s", ticket->passenger.firstname);
     sprintf(nameFile, "data/ticketsPassenger/%s.txt", ticket->id);
     ticketFile = fopen(nameFile, "a");
     if(ticketFile == NULL)
@@ -363,14 +363,12 @@ void saveTicketPassenger(Ticket *ticket) {
 
     fprintf(ticketFile, "__________________________________________\n\n");
 
-    printf("|%s|", ticket->id);
-    printf("1 , %d", ticket->vip);
+
     if (ticket->vip == 2) {
         fprintf(ticketFile,"Felicitation vous etes VIP !\n");
     }
-    printf("2");
     fprintf(ticketFile, "\tNom : %s \tPrenom : %s\n", ticket->passenger.lastname, ticket->passenger.firstname);
-    printf("3");
+
     fprintf(ticketFile, "\tAge : %d \tCategorie : ", ticket->passenger.age);
     if (ticket->passenger.age <= 12) {
         fprintf(ticketFile, "Enfant\n");
@@ -384,10 +382,10 @@ void saveTicketPassenger(Ticket *ticket) {
     fprintf(ticketFile, "\tDestination : %s\n", ticket->destination);
     fprintf(ticketFile, "\tPlace dans l'avion : (%d, %d)\n", ticket->seat.x + 1, ticket->seat.y + 1);
     fprintf(ticketFile, "\tNombre de bagages : %d\n", ticket->luggageCount);
-    printf("flllll");
+
     fprintf(ticketFile, "__________________________________________\n\n");
-    printf("world");
+
     fclose(ticketFile);
 
-    printf("\nVotre Billet est disponible à l'adresse %s\n", nameFile);
+    printf("\nVotre Billet est disponible a l'adresse data/ticketsPassenger/ \n");
 }

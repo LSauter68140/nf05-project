@@ -31,9 +31,8 @@ Flight *parseFlights(int *flightCount) {
             exit(EXIT_SUCCESS);
 
 
-
+        // on ajoute ainsi le 1er vol
         flights = addFlight(flights,flightCount);
-        printf("nbr vol %d qsdf |%s|", *flightCount, flights[0].destination);
         fclose(flightsFile);
         return flights;
     }
@@ -201,7 +200,7 @@ void boardPassengers(Ticket *flightTickets, int flightTicketCount, int flightCou
         ticketIndex--;
 
         // On rappelle au passager s'il a besoin d'un visa ou non et on le fait embarquer seulement s'il en a un en sa possession
-        if (checkFrontiers(&flightTickets[ticketIndex], flightCount)) {
+       /if (checkFrontiers(&flightTickets[ticketIndex], flightCount)) {
             // Le passager peut maintenant déposer des bagages en soute
             addLuggages(&flightTickets[ticketIndex]);
         } else {
@@ -498,19 +497,19 @@ int checkFrontiers(Ticket *ticket, int flightCount) {
     FILE *nationalitiesFile;
     int j, result = 0;
     char hasVisa;
-
-    char ***nationalities = malloc(flightCount * sizeof(char **));
-
+    printf("hello boyy %d", flightCount);
+    char ***nationalities = (char***) malloc(flightCount * sizeof(char **));
+    printf("dzvrth");
     for (int i = 0; i < flightCount; i++) {
         printf("\n %d", i);
-        nationalities[i] = malloc(2 * sizeof(char *));
-
+        nationalities[i] = (char**) malloc(2 * sizeof(char *));
+        printf("azerty");
         for (int k = 0; k < 2; k++) {
             // taille de 50 caractères max pour une destination
-            nationalities[i][k] = malloc(50 * sizeof(char));
+            nationalities[i][k] = (char*) malloc(50 * sizeof(char));
         }
     }
-
+    printf("nnvvv");
     // On ouvre le fichier qui associe les pays à leur nationalité
     nationalitiesFile = fopen("data/nationalities.txt", "r");
     if (nationalitiesFile == NULL) {
@@ -519,7 +518,7 @@ int checkFrontiers(Ticket *ticket, int flightCount) {
     else {
         // On lit le fichier
         rewind(nationalitiesFile);
-        
+        printf("zrrggt");
         for (int i = 0; i < flightCount; i++) {
             fscanf(nationalitiesFile, "%s %s", nationalities[i][0], nationalities[i][1]);
         }
