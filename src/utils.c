@@ -67,3 +67,16 @@ void clearScreen() {
     printf("\033[H\033[J");
 #endif
 }
+void createPath(char * path){
+
+    struct stat st = {0};
+    if (stat(path, &st) == -1) {
+
+#ifdef _WIN32
+        mkdir(path);
+#else
+        mkdir(path, 0700);
+#endif
+
+    }
+}

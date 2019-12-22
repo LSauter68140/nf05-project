@@ -65,4 +65,10 @@ void getTicketId(Ticket *ticket, char *ticketId);
  */
 void addLuggages(Ticket *ticket);
 
+/**
+ * @brief   Enregistre le billet du passager dans un fichier unique dans @a data/ticketsPassenger
+ * @param   ticket       Billet du passager.
+ */
+void saveTicketPassenger(Ticket *ticket);
+
 #endif // NF05_PROJECT_TICKETS_H

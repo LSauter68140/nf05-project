@@ -6,6 +6,9 @@
 #ifndef NF05_PROJECT_UTILS_H
 #define NF05_PROJECT_UTILS_H
 
+#include <sys/stat.h>
+#include <unistd.h>
+
 #include "structs.h"
 
 /**
@@ -40,5 +43,12 @@ void getValue(char *format, void *value);
  * @brief    Efface la console en fonction du système d'exploitation sous lequel est exécuté le programme (ici on regarde si on est sous Windows ou non)
  */
 void clearScreen();
+
+/**
+ * @brief   Permet de créer directement le chemin du dossier voulu
+ * @param   path        Chemin à créer
+ */
+
+void createPath(char * path);
 
 #endif //NF05_PROJECT_UTILS_H

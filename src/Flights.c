@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <sys/stat.h>
+#include <unistd.h>
 
 #include "Flights.h"
 
@@ -14,8 +15,30 @@ Flight *parseFlights(int *flightCount) {
     int seatX, seatY, seatVip, i, luggagesCount;
     float luggagesWeight;
     char destinationFilename[75];
+    char choice;
 
     flightsFile = fopen("data/flights.txt", "r");
+    if (flightsFile == NULL){
+        // on crée le fichier
+        createPath("data");
+        printf("\n Aucun vol trouve \n");
+        do{
+            printf("Voulez vous en ajouter un ? (O) ou quitter le programme et ajouter un fichier à data/flights.txt (n)\n");
+            getValue("%c", &choice);
+
+        } while (choice != 'o' && choice != 'O' && choice != 'n' && choice != 'N');
+        if (choice == 'n' || choice == 'N')
+            exit(EXIT_SUCCESS);
+
+
+
+        flights = addFlight(flights,flightCount);
+        printf("nbr vol %d qsdf |%s|", *flightCount, flights[0].destination);
+        fclose(flightsFile);
+        return flights;
+    }
+
+
 
     for (i = 0; !feof(flightsFile); i++) {
         flights = realloc(flights, (i + 1) * sizeof(Flight));
@@ -58,15 +81,7 @@ Flight *parseFlights(int *flightCount) {
             }
         } else {
             // Si le dossier n'existe pas, on le crée
-            struct stat st = {0};
-            if (stat("data/flights", &st) == -1) {
-#ifdef _WIN32
-                mkdir("data/flights");
-#else
-                mkdir("data/flights", 0700);
-#endif
-            }
-
+            createPath("data/flights");
             luggagesWeight = 0;
             luggagesCount = 0;
 
@@ -128,6 +143,7 @@ void displayFlightsList(Flight *flights, int flightCount) {
 }
 
 void displayAvailableFlightsList(Flight *flights, int flightCount) {
+    flights = parseFlights(&flightCount);
     for (int i = 0; i < flightCount && getFreeSeatCount(&flights[i]) > 0; ++i) {
         char date[17];
         formatDate(flights[i].date, date);
@@ -141,7 +157,6 @@ void displayAvailableFlightsList(Flight *flights, int flightCount) {
 
 int getFreeSeatCount(Flight *flight) {
     int freeSeats = 0;
-
     for (int i = 0; i < flight->rowCount; i++) {
         for (int j = 0; j < flight->columnCount; j++) {
             if (flight->seats[i][j] == 0) {
@@ -208,6 +223,7 @@ void boardPassengers(Ticket *flightTickets, int flightTicketCount, int flightCou
 void boardFlight(Flight *flights, int *flightCount, Ticket *tickets, int ticketCount) {
     Ticket *flightTickets;
     int flightIndex, flightTicketCount = 0;
+    int passengerCount =0;
 
     displayFlightsList(flights, *flightCount);
     do {
@@ -229,7 +245,7 @@ void boardFlight(Flight *flights, int *flightCount, Ticket *tickets, int ticketC
                 flightTickets[flightTicketCount++] = tickets[i];
             }
         }
-
+        passengerCount += flightTicketCount;
         if (flightTicketCount > 0) {
             if (vip) {
                 printf("\n--- Embarquement des passagers prioritaires ---\n");
@@ -248,13 +264,19 @@ void boardFlight(Flight *flights, int *flightCount, Ticket *tickets, int ticketC
     }
 
     // on met le vol qui est parti dans l'historique
+
     removeFlight(flights, flightCount, flightIndex);
     free(flightTickets);
+    if (passengerCount){
+        printf("\n\nTous les passagers du vol ont bien embarqué. Bon voyage !\n");
+    }else{
+        printf("\n\n L'avion est parti vide car aucun passagers inscris.\n");
+    }
 
-    printf("\n\nTous les passagers du vol ont bien embarqué. Bon voyage !\n");
 }
 
-void addFlight(Flight *flights, int *flightCount) {
+Flight* addFlight(Flight *flights, int *flightCount) {
+
     FILE *flightsFile = fopen("data/flights.txt", "a+");
     FILE *visaFile = fopen("data/nationalities.txt","a+");
     Flight newFlight;
@@ -291,7 +313,10 @@ void addFlight(Flight *flights, int *flightCount) {
     } while(newFlight.date.minute < 0 || newFlight.date.minute > 59);
 
     // on le met dans le fichier avion
-    fprintf(flightsFile, "\n%s %s %s %d %d \t%d %d %d %d %d", newFlight.destination, newFlight.plane,
+    fseek(flightsFile, SEEK_END-1, SEEK_SET);
+    if (ftell(flightsFile)!= 0)
+        fprintf(flightsFile,"\n");
+    fprintf(flightsFile, "%s %s %s %d %d \t%d %d %d %d %d", newFlight.destination, newFlight.plane,
             newFlight.flightId, newFlight.rowCount, newFlight.columnCount,
             newFlight.date.day,newFlight.date.month, newFlight.date.year, newFlight.date.hour,
             newFlight.date.minute);
@@ -322,8 +347,9 @@ void addFlight(Flight *flights, int *flightCount) {
         for (int i = 1; nationality[i] != '\0' ; ++i) {
             nationality[i] = tolower(nationality[i]);
         }
-
-        fprintf(visaFile, "\n%s %s", newFlight.destination, nationality);
+        if (ftell(visaFile) !=0)
+            fprintf(visaFile, "\n");
+        fprintf(visaFile, "%s %s", newFlight.destination, nationality);
     }
 
     fclose(visaFile);
@@ -333,6 +359,8 @@ void addFlight(Flight *flights, int *flightCount) {
     (*flightCount)++;
     flights = realloc(flights, *flightCount * sizeof(Flight));
     flights[*flightCount - 1] = newFlight;
+
+    return flights;
 }
 
 void removeFlight(Flight *flights, int *flightCount, int flightIndex) {
@@ -355,6 +383,7 @@ void removeFlight(Flight *flights, int *flightCount, int flightIndex) {
     fscanf(destinationFile, "%f %d", &luggagesWeight, &luggagesCount);
 
     while(!feof(destinationFile)) {
+
         int vip;
         fscanf(destinationFile, "%d %d %d", &vip, &vip, &vip);
         vipCount += (vip == 0) ? 0 : 1; // on rajoute 1 si vip sinon on ne change pas la valeur
@@ -362,6 +391,10 @@ void removeFlight(Flight *flights, int *flightCount, int flightIndex) {
     }
 
     // On ajoute le vol dans le fichier de l'historique des vols
+    fseek(historyFile, SEEK_END-1,SEEK_SET);
+    if (ftell(historyFile)!=0)
+        fprintf(historyFile, "%n");
+
     fprintf(historyFile, "%s %s %s %d %d %d %d %d %d %d %f %d %d %d\n", flights[flightIndex].destination, flights[flightIndex].plane,
             flights[flightIndex].flightId, flights[flightIndex].rowCount, flights[flightIndex].columnCount,
             flights[flightIndex].date.day,flights[flightIndex].date.month, flights[flightIndex].date.year, flights[flightIndex].date.hour,
@@ -377,20 +410,26 @@ void removeFlight(Flight *flights, int *flightCount, int flightIndex) {
                     flights[i].flightId, flights[i].rowCount, flights[i].columnCount,
                     flights[i].date.day,flights[i].date.month, flights[i].date.year, flights[i].date.hour,
                     flights[i].date.minute);
-
+            printf("\n %d", i);
         }
         else {
             // On enlève le vol du tableau des vols
-            for (int j = i; j < *flightCount; j++) {
+            printf("%d \n", *flightCount);
+            for (int j = i; j < (*flightCount)- 1; j++) {
                 // On décale tous les éléments vers le début du tableau
                 flights[j] = flights[j + 1];
 
-                // On décrémente i pour compenser le fait d'avoir supprimé un élément du tableau
-                i--;
             }
+
+
+            // On décrémente i pour compenser le fait d'avoir supprimé un élément du tableau
+            i--;
+            (*flightCount) --;
+            flightIndex = -1;
+
         }
     }
-    (*flightCount)--;
+
 
     fclose(flightsFile);
     fclose(destinationFile);
@@ -461,7 +500,9 @@ int checkFrontiers(Ticket *ticket, int flightCount) {
     char hasVisa;
 
     char ***nationalities = malloc(flightCount * sizeof(char **));
+
     for (int i = 0; i < flightCount; i++) {
+        printf("\n %d", i);
         nationalities[i] = malloc(2 * sizeof(char *));
 
         for (int k = 0; k < 2; k++) {
@@ -478,6 +519,7 @@ int checkFrontiers(Ticket *ticket, int flightCount) {
     else {
         // On lit le fichier
         rewind(nationalitiesFile);
+        
         for (int i = 0; i < flightCount; i++) {
             fscanf(nationalitiesFile, "%s %s", nationalities[i][0], nationalities[i][1]);
         }

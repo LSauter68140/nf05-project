@@ -102,7 +102,7 @@ void deleteTickets(Ticket *ticketsToDelete, int ticketsToDeleteCount, Ticket *ti
  * @param   flights     Tableau contenant tous les vols. Le nouveau vol va y être ajouté
  * @param   flightCount Nombre de vols dans @a flights
  */
-void addFlight(Flight *flights, int *flightCount);
+Flight *addFlight(Flight *flights, int *flightCount);
 
 /**
  * @brief   Supprime le vol du fichier @a data/flights.txt et le met dans le fichier @a data/history/flights.txt pour avoir un historique des vols
