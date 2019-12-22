@@ -56,7 +56,6 @@ int main() {
             case '2':
                 printf("\n=== Ajout d'un vol ===\n\n");
                 flights = addFlight(flights, &flightCount);
-                printf("anbr vol %d %s", flightCount, flights[8].destination);
                 break;
             case '3':
                 printf("\n=== Embarquement d'un vol ===\n\n");
