@@ -1,24 +1,10 @@
-#include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
 #include <ctype.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 #include <sys/stat.h>
-#include <unistd.h>
 
 #include "Flights.h"
-
-
-/**
- * @file           Flights.c
- * @authors    Valentin Peltier & Loïc Sauter
- * @version   1.0
- * @date       22 Decembre 2019
- * @brief      Fichier conten
-ant toutes les fonctions en rapport avec les vol
-*
-*/
-
-
 
 Flight *parseFlights(int *flightCount) {
     Flight *flights = malloc(0);
@@ -93,7 +79,7 @@ Flight *parseFlights(int *flightCount) {
     fclose(flightsFile);
 
     // on fait un tri pour mettre les avion pleins en fin de tableau et pour ne pas avoir à les afficher
-    qsort(flights, i, sizeof(Flight), sortFlights);
+    qsort(flights, i, sizeof(Flight), compareFlights);
 
     *flightCount = i;
     return flights;
@@ -200,8 +186,7 @@ void boardPassengers(Ticket *flightTickets, int flightTicketCount, int flightCou
         ticketIndex--;
 
         // On rappelle au passager s'il a besoin d'un visa ou non et on le fait embarquer seulement s'il en a un en sa possession
-        if (checkFrontiers(flightTickets[ticketIndex], flightCount)) {
-            printf("-->%s;%s<--\n", flightTickets[ticketIndex].passenger.lastname, flightTickets[ticketIndex].passenger.firstname);
+        if (checkFrontiers(&flightTickets[ticketIndex], flightCount)) {
             // Le passager peut maintenant déposer des bagages en soute
             addLuggages(&flightTickets[ticketIndex]);
         } else {
@@ -234,7 +219,7 @@ void boardFlight(Flight *flights, int *flightCount, Ticket *tickets, int ticketC
     // On retrouve tous les billets de ce vol
     flightTickets = malloc(flights[flightIndex].rowCount * flights[flightIndex].columnCount * sizeof(Ticket *));
 
-    displaySecurityInfo(flights[flightIndex]);
+    displaySecurityInfo(&flights[flightIndex]);
 
     // On embarque les passagers VIP en premier, puis les autres passagers
     for (int vip = 1; vip >= 0; vip--) {
@@ -247,10 +232,10 @@ void boardFlight(Flight *flights, int *flightCount, Ticket *tickets, int ticketC
 
         if (flightTicketCount > 0) {
             if (vip) {
-                printf("--- Embarquement des passagers prioritaires ---\n");
+                printf("\n--- Embarquement des passagers prioritaires ---\n");
             }
             else {
-                printf("--- Embarquement des passagers non prioritaires ---\n");
+                printf("\n--- Embarquement des passagers non prioritaires ---\n");
             }
 
             // on embarque les passagers
@@ -269,28 +254,41 @@ void boardFlight(Flight *flights, int *flightCount, Ticket *tickets, int ticketC
     printf("\n\nTous les passagers du vol ont bien embarqué. Bon voyage !\n");
 }
 
-void addFlight(Flight **flight, int *flightCount) {
+void addFlight(Flight *flights, int *flightCount) {
     FILE *flightsFile = fopen("data/flights.txt", "a+");
     FILE *visaFile = fopen("data/nationalities.txt","a+");
     Flight newFlight;
     char contryName[50], buffer[50], nationality[50];
 
-    printf("\tDestination :\n");
+    printf("\tDestination : ");
     getLine(newFlight.destination, 50);
-    printf("\t Modele :\n");
+    printf("\tModele : ");
     getLine(newFlight.plane, 20);
-    printf("\tNumero de Vol :\n");
+    printf("\tNumero de vol : ");
     getLine(newFlight.flightId, 15);
-    printf("\tNombre de place en longeur :\n");
+    printf("\tNombre de places en longeur : ");
     getValue("%d", &newFlight.columnCount);
-    printf("\tNombre de place en largeur :\n");
-    getValue("%d",&newFlight.rowCount);
-    printf("### Horaire de depart : (jj/MM/AAAA HH/mm)\n");
-    scanf("%d", &newFlight.date.day);
-    scanf("%d", &newFlight.date.month); // si jamais motivé ajoiuter des conditions pour ne pas depasser 24h ou 31j ou 60min..
-    scanf("%d", &newFlight.date.year);
-    scanf("%d", &newFlight.date.hour);
-    getValue("%d", &newFlight.date.minute);
+    printf("\tNombre de places en largeur : ");
+    getValue("%d", &newFlight.rowCount);
+    printf("\tDate de depart\n");
+    do {
+        printf("\t\tJour [1 - 31] : ");
+        getValue("%d", &newFlight.date.day);
+    } while(newFlight.date.day < 1 || newFlight.date.day > 31);
+    do {
+        printf("\t\tMois [1 - 12] : ");
+        getValue("%d", &newFlight.date.month);
+    } while(newFlight.date.month < 1 || newFlight.date.month > 12);
+    printf("\t\tAnnee : ");
+    getValue("%d", &newFlight.date.year);
+    do {
+        printf("\t\tHeure [0 - 23] : ");
+        getValue("%d", &newFlight.date.hour);
+    } while(newFlight.date.hour < 0 || newFlight.date.hour > 23);
+    do {
+        printf("\t\tMinutes [0 - 59] : ");
+        getValue("%d", &newFlight.date.minute);
+    } while(newFlight.date.minute < 0 || newFlight.date.minute > 59);
 
     // on le met dans le fichier avion
     fprintf(flightsFile, "\n%s %s %s %d %d \t%d %d %d %d %d", newFlight.destination, newFlight.plane,
@@ -298,36 +296,43 @@ void addFlight(Flight **flight, int *flightCount) {
             newFlight.date.day,newFlight.date.month, newFlight.date.year, newFlight.date.hour,
             newFlight.date.minute);
 
-    // on verifie si le pays est déjà répertorier dans le ficher de visa ou non
-    for (int i = 0; newFlight.destination[i] !='\0' ; ++i) {
+    // on verifie si le pays est déjà répertorié dans le ficher de visa ou non
+    for (int i = 0; newFlight.destination[i] != '\0' ; ++i) {
         newFlight.destination[i] = tolower(newFlight.destination[i]);
     }
 
+    while (!feof(visaFile)) {
+        fscanf(visaFile, "%s %s", contryName, buffer);
+        contryName[0] = tolower(contryName[0]);
 
-    while (feof(visaFile) == 0){
-        fscanf(visaFile, "%s %s",contryName, buffer);
-        contryName[1]= tolower(contryName[1]);
-        if (strcmp(newFlight.destination, contryName)==0){
+        if (strcmp(newFlight.destination, contryName) == 0) {
+            // Le pays est déjà répertorié
             break;
         }
     }
 
-    if (strcmp(newFlight.destination, contryName)!=0){
-        // ce qui veut dire que le pays n'est pas répertorier on l'ajoute
-        printf("Quel est la nationalité des habitants au masculin de %s (information visa)\n", newFlight.destination);
-        scanf("%c", buffer);
+    // Si le pays n'est pas répertorié, on l'ajoute au fichier
+    if (strcmp(newFlight.destination, contryName) != 0) {
+        newFlight.destination[0] = toupper(newFlight.destination[0]);
+        printf("\tQuelle est la nationalité (au masculin) des habitants de %s ? ", newFlight.destination);
         getLine(nationality, 50);
-        nationality[0]= toupper(nationality[0]); // on met la premiere lettre en majuscule uniquement
-        for (int i = 1; nationality[i] !='\0' ; ++i) {
+
+        // On met la première lettre en majuscule uniquement
+        nationality[0] = toupper(nationality[0]);
+        for (int i = 1; nationality[i] != '\0' ; ++i) {
             nationality[i] = tolower(nationality[i]);
         }
-        newFlight.destination[0]= toupper(newFlight.destination[0]);
-        fprintf(visaFile, "\n%s %s",newFlight.destination, nationality);
+
+        fprintf(visaFile, "\n%s %s", newFlight.destination, nationality);
     }
+
     fclose(visaFile);
     fclose(flightsFile);
-    // on le rajoute dans le ficher flight;
-    *flight = parseFlights(flightCount);
+
+    // on le rajoute dans la liste des vols
+    (*flightCount)++;
+    flights = realloc(flights, *flightCount * sizeof(Flight));
+    flights[*flightCount - 1] = newFlight;
 }
 
 void removeFlight(Flight *flights, int *flightCount, int flightIndex) {
@@ -437,9 +442,9 @@ void deleteTickets(Ticket *ticketsToDelete, int ticketsToDeleteCount, Ticket *ti
     fclose(ticketsFile);
 }
 
-void displaySecurityInfo(Flight flight) {
+void displaySecurityInfo(Flight *flight) {
     printf("\n=== A l'attention de tous les passagers du vol %s a destination de %s ===\n",
-            flight.flightId, flight.destination);
+            flight->flightId, flight->destination);
     printf("\nVous allez passer la securite, vous devez enlever les objets suivants :\n");
     printf("----------------------------------------------------------------------\n");
     printf("|\tTout produit liquide, parfum, gel douche, shampooing, lotion, dentifrice, >100ml chacun\n");
@@ -450,7 +455,7 @@ void displaySecurityInfo(Flight flight) {
     printf("----------------------------------------------------------------------\n");
 }
 
-int checkFrontiers(Ticket tickets, int flightCount) {
+int checkFrontiers(Ticket *ticket, int flightCount) {
     FILE *nationalitiesFile;
     int j, result = 0;
     char hasVisa;
@@ -477,20 +482,20 @@ int checkFrontiers(Ticket tickets, int flightCount) {
             fscanf(nationalitiesFile, "%s %s", nationalities[i][0], nationalities[i][1]);
         }
 
-        for (j = 0; j < flightCount && strcmp(tickets.destination, nationalities[j][0]) != 0; ++j);
+        for (j = 0; j < flightCount && strcmp(ticket->destination, nationalities[j][0]) != 0; ++j);
 
-        if (strcmp(tickets.destination, nationalities[j][0]) == 0) {
-            for(int i = 0; tickets.passenger.nationality[i]!= '\0'; i++) {
-                tickets.passenger.nationality[i] = tolower(tickets.passenger.nationality[i]); // si jamais il y a une majuscule
+        if (strcmp(ticket->destination, nationalities[j][0]) == 0) {
+            for(int i = 0; ticket->passenger.nationality[i]!= '\0'; i++) {
+                ticket->passenger.nationality[i] = tolower(ticket->passenger.nationality[i]); // si jamais il y a une majuscule
             }
 
             printf("\tPassager : %s %s\n\tNationalite : %s\n\tDestination : %s\n\tNumero de billet : %s\n",
-                    tickets.passenger.lastname, tickets.passenger.firstname, tickets.passenger.nationality,
-                    tickets.destination, tickets.id);
+                    ticket->passenger.lastname, ticket->passenger.firstname, ticket->passenger.nationality,
+                    ticket->destination, ticket->id);
 
             printf("\n--- Service des douanes ---\n");
 
-            if (strcmp(tickets.passenger.nationality, nationalities[j][1]) == 0) {
+            if (strcmp(ticket->passenger.nationality, nationalities[j][1]) == 0) {
                 printf("--> Pas besoin de Visa\n");
                 result = 1;
             } else {
@@ -521,6 +526,6 @@ int checkFrontiers(Ticket tickets, int flightCount) {
     return result;
 }
 
-int sortFlights(const void *a, const void *b) {
-    return getFreeSeatCount((Flight *)a) < getFreeSeatCount((Flight *)b);
+int compareFlights(const void *a, const void *b) {
+    return getFreeSeatCount((Flight *)b) - getFreeSeatCount((Flight *)a);
 }

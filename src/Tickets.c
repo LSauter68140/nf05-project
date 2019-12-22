@@ -5,17 +5,8 @@
 #include <ctype.h>
 #include <string.h>
 
-/**
- * @file           Tickets.c
- * @authors    Valentin Peltier & Loïc Sauter
- * @version   1.0
- * @date       22 Decembre 2019
- * @brief      Fichier contenant toutes les fonctions en rapport avec les tickets et leur affichage
- *
- */
-
-Ticket* parseTickets(int* ticketCount) {
-    Ticket* tickets = malloc(0);
+Ticket* parseTickets(int *ticketCount) {
+    Ticket *tickets = malloc(0);
     int count = 0;
 
     FILE *ticketsFile;
@@ -30,14 +21,17 @@ Ticket* parseTickets(int* ticketCount) {
     if (ftell(ticketsFile) != 0) {
         fseek(ticketsFile, 0L, SEEK_SET);
         for (; !feof(ticketsFile); count++) {
+            int gender;
             tickets = realloc(tickets, (count + 1) * sizeof(Ticket));
 
             // On recupère les infos du billet
             fscanf(ticketsFile, "%s %s %s %d %d %s %s %s %d %d %d %d", tickets[count].id,
                 tickets[count].passenger.lastname, tickets[count].passenger.firstname, &tickets[count].passenger.age,
-                &tickets[count].passenger.gender, tickets[count].passenger.nationality,
+                &gender, tickets[count].passenger.nationality,
                 tickets[count].passenger.passportNumber, tickets[count].destination, &tickets[count].vip, &tickets[count].luggageCount,
                 &tickets[count].seat.x, &tickets[count].seat.y);
+
+            tickets[count].passenger.gender = (Gender) gender;
         }
     }
 
@@ -47,7 +41,7 @@ Ticket* parseTickets(int* ticketCount) {
     return tickets;
 }
 
-void addTicket(Flight* flights, int flightCount, Ticket* tickets, int* ticketCount) {
+void addTicket(Flight *flights, int flightCount, Ticket *tickets, int *ticketCount) {
     char choice;
     int randomSeat, flightIndex, i;
     Ticket ticket;
@@ -154,7 +148,7 @@ void addTicket(Flight* flights, int flightCount, Ticket* tickets, int* ticketCou
     // Vérifie si le vol est complet
     if (getFreeSeatCount(&flights[flightIndex]) == 0) {
         // On retrie le tableau pour éviter de le réafficher la prochaine fois
-        qsort(flights, flightCount, sizeof(Flight), sortFlights);
+        qsort(flights, flightCount, sizeof(Flight), compareFlights);
         printf("\nFelicitation vous avez eu la derniere place !");
     }
 
@@ -170,7 +164,7 @@ void addTicket(Flight* flights, int flightCount, Ticket* tickets, int* ticketCou
     tickets[*ticketCount] = ticket;
 }
 
-void displayTicket(Ticket* ticket) {
+void displayTicket(Ticket *ticket) {
     printf("Billet n° %s\n", ticket->id);
     printf("--------------------------------------------\n");
     if (ticket->vip) {
@@ -193,14 +187,14 @@ void displayTicket(Ticket* ticket) {
     printf("--------------------------------------------\n\n");
 };
 
-void displayTicketsList(Ticket* tickets, int ticketCount) {
+void displayTicketsList(Ticket *tickets, int ticketCount) {
     for(int i = 0; i < ticketCount; i++) {
         printf("%d)\t%s %s\n\tBillet n° %s\n\tDestination : %s\n\n", i+1,
             tickets[i].passenger.lastname, tickets[i].passenger.firstname, tickets[i].id, tickets[i].destination);
     }
 }
 
-void selectAndDisplayTicket(Ticket* tickets, int ticketCount) {
+void selectAndDisplayTicket(Ticket *tickets, int ticketCount) {
     int ticketIndex;
 
     displayTicketsList(tickets, ticketCount);
@@ -214,8 +208,8 @@ void selectAndDisplayTicket(Ticket* tickets, int ticketCount) {
     displayTicket(&tickets[ticketIndex - 1]);
 }
 
-void saveTicket(Ticket* ticket) {
-    FILE* ticketsFile = NULL;
+void saveTicket(Ticket *ticket) {
+    FILE *ticketsFile = NULL;
 
     // On génère l'id du billet
     getTicketId(ticket, ticket->id);
@@ -239,7 +233,7 @@ void saveTicket(Ticket* ticket) {
     fclose(ticketsFile);
 }
 
-void getTicketId(const Ticket* ticket, char* ticketId) {
+void getTicketId(Ticket *ticket, char *ticketId) {
     char age[3];
 
     // On convertit l'âge en chaîne de caractères
@@ -265,19 +259,19 @@ void getTicketId(const Ticket* ticket, char* ticketId) {
     }
 }
 
-void addLuggages(Ticket* ticket) {
+void addLuggages(Ticket *ticket) {
     printf("\n\tVous pouvez deposer %d bagage%s en soute.\n", ticket->luggageCount, ticket->luggageCount > 1 ? "s" : "");
 
     for (int i = 0; i < ticket->luggageCount; ++i) {
         char filename[32];
-        sprintf(filename, "data/Ticket %d.txt", i + 1);
+        sprintf(filename, "data/Ticket_%d.txt", i + 1);
 
         // Get luggage info
         printf("\tPoids du bagage n°%d en kg (max 20kg sinon supplement) : ", i + 1);
         getValue("%f", &ticket->luggagesWeight[i]);
 
         // Generate file
-        FILE* file;
+        FILE *file;
         file = fopen(filename, "w");
 
         fprintf(file, "------------------------------------------------------\n");

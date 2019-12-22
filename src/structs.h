@@ -3,8 +3,17 @@
  * @brief Ce fichier définit toutes les structures de base
  */
 
-#ifndef NF05_PROJECT_STRUCT_H
-#define NF05_PROJECT_STRUCT_H
+#ifndef NF05_PROJECT_STRUCTS_H
+#define NF05_PROJECT_STRUCTS_H
+
+typedef enum {
+    /// Homme. Sa valeur entière est 0
+    man,
+    /// Femme. Sa valeur entière est 1
+    woman,
+    /// Non-binaire. Sa valeur entière est 2
+    nonBinary
+} Gender;
 
 typedef struct {
     /// Jour. Doit être compris entre 1 et 31 inclus
@@ -33,8 +42,8 @@ typedef struct {
     char firstname[50];
     /// Âge du passager. Si l'âge est inférieur à 12 ans, le passager est considéré comme un enfant
     int age;
-    /// Sexe du passager. (0 : Homme, 1 : Femme, 2 : non-binaire)
-    int gender;
+    /// Sexe du passager
+    Gender gender;
     /// Nationalité du passager. 50 caractères maximum
     char nationality[50];
     /// Numéro de passeport du passager. 10 caractères maximum
@@ -75,4 +84,4 @@ typedef struct {
     Date date;
 } Flight;
 
-#endif //NF05_PROJECT_STRUCT_H
+#endif //NF05_PROJECT_STRUCTS_H

@@ -9,7 +9,7 @@
 
 /**
  * @file        main.c
- * @authors      Valentin Peltier & Loïc Sauter
+ * @authors     Valentin Peltier & Loïc Sauter
  * @version     1.0
  * @date        22 Decembre 2019
  * @brief       Fichier principal du projet
@@ -22,8 +22,8 @@ int main() {
     clearScreen();
 
     // on commence par récupérer les avions et passagers
-    Ticket* tickets;
-    Flight* flights;
+    Ticket *tickets;
+    Flight *flights;
     int ticketCount = 0, flightCount = 0;
 
     tickets = parseTickets(&ticketCount);
@@ -53,7 +53,7 @@ int main() {
                 break;
             case '2':
                 printf("\n=== Ajout d'un vol ===\n\n");
-                addFlight(&flights, &flightCount);
+                addFlight(flights, &flightCount);
                 break;
             case '3':
                 printf("\n=== Embarquement d'un vol ===\n\n");
@@ -91,8 +91,6 @@ int main() {
         if (action != 'q' && action != 'Q') {
             clearScreen();
         }
-
-        printf("\n\n\n\n\n");
     } while(action != 'Q' && action !='q');
 
     // Free memory

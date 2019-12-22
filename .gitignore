@@ -1,17 +1,21 @@
+# CMake / make
 /cmake-build-debug
 /cmake-build-release
 /CMakeFiles
-/build
-/.idea
-/.vscode
-
-/docs
-/data/flights
-/data/passengers.txt
-
 Makefile
 CMakeCache.txt
 cmake_install.cmake
 
+# IDE
+/.idea
+/.vscode
+
+# Misc folders
+/docs
+/build
+/data/flights
+/data/passengers.txt
+
+# Executables
 nf05_project
 nf05_project.exe

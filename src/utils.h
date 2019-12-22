@@ -1,50 +1,43 @@
-#ifndef NF05_PROJECT_UTILS_H
-#define NF05_PROJECT_UTILS_H
-
-#include "structs.h"
 /**
  * @file utils.h
  * @brief Ce fichier définit toutes les fonctions de formatage de données et d'entrée
  */
 
-// Format
+#ifndef NF05_PROJECT_UTILS_H
+#define NF05_PROJECT_UTILS_H
+
+#include "structs.h"
 
 /**
- * @brief      Formatage de la date en JJ/MM/AAAA HH/mm
- * @param    date               Forme brute
- * @param    formattedDate         Retourne la date formatée.
+ * @brief    Formate la date sous le format "JJ/MM/AAAA HH[h]mm"
+ * @param    date               Date à formater
+ * @param    formattedDate      Retourne la date formatée
  */
+void formatDate(Date date, char *formattedDate);
 
-
-void formatDate(Date date, char* formattedDate);
 /**
- * @brief      Formatage du genre de la personne en fonction de l'entrée (0,1,2)
- * @param    gender                 Le genre de la personne, (0) @a Homme, (1) @a Femmme, (2) @a Non binaire
- * @return   char*         Retourne 'Homme', 'Femme', ou 'Non binaire' en fonction de l'entrée
+ * @brief    Formate le genre de la personne en chaîne de caractères
+ * @param    gender        Le genre de la personne
+ * @return   Retourne "Homme", "Femme", ou "Non binaire" en fonction de @a gender
  */
-
-char* formatGender(int gender);
-
-// Inputs
+char* formatGender(Gender gender);
 
 /**
- * @brief    Permet de récupérer une ligne de caractères en entrée avec des espaces
- * @param   line            Renvoie la ligne tapée au clavier sous la forme d'une chaine de caractères
- * @param   maxLength         La taille maximum que peut avoir la chaine de caractères que l'on met entrée pour line.
+ * @brief   Permet de récupérer une ligne de caractères depuis l'entrée standard en remplaçant les espaces par des underscores
+ * @param   line        Renvoie la ligne tapée au clavier sous la forme d'une chaîne de caractères
+ * @param   maxLength   La taille maximum que peut avoir la chaine de caractères
  */
-
-void getLine(char* line, int maxLength);
+void getLine(char *line, int maxLength);
 
 /**
- * @brief    Permet de récupérer un @a void sous la forme que l'on met en paramètre tout enlevant les espaces indésirables
- * @param   format         Le format que l'on donne en entrée peut être de type char, int, float...
- * @param   value         Renvoie la valeur que l'on a scanée
+ * @brief   Permet de récupérer une valeur depuis l'entrée standard
+ * @param   format        Le format que l'on souhaite récupérer (même paramètre que pour la fonction standard @a scanf)
+ * @param   value         Renvoie la valeur
  */
-
-void getValue(char* format, void* value);
+void getValue(char *format, void *value);
 
 /**
- * @brief    Efface la console, de facon différente en fonction de l'environnement sous lequel est exécuté le programme (ici regarde si on est sous Windows ou non)
+ * @brief    Efface la console en fonction du système d'exploitation sous lequel est exécuté le programme (ici on regarde si on est sous Windows ou non)
  */
 void clearScreen();
 

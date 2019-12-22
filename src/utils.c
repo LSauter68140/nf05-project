@@ -1,15 +1,10 @@
 #include "utils.h"
-/**
- * @file utils.c
- * @brief Ce fichier contient toutes les fonctions de formatage de données et d'entrée
- */
-
 
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
 
-void formatDate(Date date, char* formattedDate) {
+void formatDate(Date date, char *formattedDate) {
     char day[3], month[3], year[5], hour[3], minute[3];
 
     sprintf(day, "%s%d", date.day < 10 ? "0" : "", date.day);
@@ -21,20 +16,20 @@ void formatDate(Date date, char* formattedDate) {
     sprintf(formattedDate, "%s/%s/%s %sh%s", day, month, year, hour, minute);
 }
 
-char* formatGender(int gender) {
+char* formatGender(Gender gender) {
     switch(gender) {
-        case 0:
+        case man:
             return "Homme";
-        case 1:
+        case woman:
             return "Femme";
-        case 2:
+        case nonBinary:
             return "Non binaire";
         default:
             return "";
     }
 }
 
-void getLine(char* line, int maxLength) {
+void getLine(char *line, int maxLength) {
     int ch, len;
 
     fgets(line, maxLength, stdin);
@@ -58,7 +53,7 @@ void getLine(char* line, int maxLength) {
     }
 }
 
-void getValue(char* format, void* value) {
+void getValue(char *format, void *value) {
     scanf(format, value);
 
     // Clear others characters until \n and \n itself
