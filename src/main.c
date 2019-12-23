@@ -39,7 +39,6 @@ int main() {
         printf("\n4. Consulter les billets");
         printf("\n5. Consulter les vols disponibles");
         printf("\n6. Consulter le billet d'un passager");
-        printf("\n7. Consulter l'historique des vols (sur une periode donnee)");
         printf("\nQ. Quitter");
 
         printf("\n\n> Que voulez vous faire ? ");
@@ -70,10 +69,6 @@ int main() {
             case '6':
                 printf("\n=== Affichage d'un billet ===\n\n");
                 selectAndDisplayTicket(tickets, ticketCount);
-                break;
-            case '7':
-                printf("\n=== Afficher l'historique des vols ===\n\n");
-                printf("Fonctionalite non disponible pour le moment\n\n"); // TODO
                 break;
             case 'Q':
             case 'q':

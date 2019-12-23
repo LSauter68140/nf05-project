@@ -239,7 +239,7 @@ void saveTicket(Ticket *ticket) {
     fprintf(ticketFile, "__________________________________________\n\n");
 
     if (ticket->vip) {
-        fprintf(ticketFile,"Felicitation vous etes VIP !\n");
+        fprintf(ticketFile, "Felicitation vous etes VIP !\n");
     }
     fprintf(ticketFile, "\tNom : %s \tPrenom : %s\n", ticket->passenger.lastname, ticket->passenger.firstname);
 
@@ -292,49 +292,96 @@ void getTicketId(Ticket *ticket, char *ticketId) {
 void addLuggages(Ticket *ticket) {
 
     char filename[55];
+    char nameDestFile[50];
+    float luggagesWeight = 0;
+    int luggagesCounting = 0, passengerCount = 0;
+    int seatXYVIP[500][3]; // on considère qu'il n'y a pas plus de 500pasagers sur chaque vol
+    int lugCounting = ticket->luggageCount;
+
+    printf("nbr de bagages %d", ticket->luggageCount);
+
     sprintf(filename, "data/ticketsPassenger/%s.txt", ticket->id);
-    FILE *file;
-    file = fopen(filename, "a+");
+    sprintf(nameDestFile, "data/flights/%s.txt", ticket->destination);
+    FILE *file =NULL, *destinationFile = NULL;
+    file = fopen(filename, "r+");
     if (file == NULL) {
         //fichier manquant on le recrée
+        fclose(file);
         saveTicketPassenger(ticket);
+        // on le reouvre
+        file = fopen(filename, "a+");
     }
 
-    fseek(file, SEEK_END, SEEK_SET); // on positionne le curseur à la fin
-    if (ticket->luggageCount >0){
-        fprintf(file, "\n\nVo%s bagage%s en soute :\n",ticket->luggageCount > 1 ? "s" : "tre",ticket->luggageCount > 1 ? "s" : "" );
+    destinationFile = fopen(nameDestFile, "r");
+    rewind(destinationFile);
+    if (destinationFile != NULL) {
+        // on récupère les données du vol pour pouvoir changer le poids total des bagages et le nombre
+        fscanf(destinationFile, "%f %d", &luggagesWeight, &luggagesCounting);
+
+        // on recupere les places qui sont déjà occupées et on le met dans l'avion
+        for (; !feof(destinationFile); passengerCount++) {
+            fscanf(destinationFile, "%d", &seatXYVIP[passengerCount][0]);
+            fscanf(destinationFile, "%d", &seatXYVIP[passengerCount][1]);
+            fscanf(destinationFile, "%d", &seatXYVIP[passengerCount][2]);
+        }
+        fclose(destinationFile);
+    } else {
+
+        // si inexistant on le signal et on fait sans
+        printf("\n Attention le fichier |%s| manquant, le programme continue de fonctionner sans mais l'utilsation pourra en etre degradee\n",
+               nameDestFile);
+    }
+
+
+    printf("\n>>>nbr de bagages %d et %d", lugCounting, ticket->luggageCount);
+    fseek(file, 0, SEEK_END); // on positionne le curseur à la fin
+    if (lugCounting > 0) {
+        fprintf(file, "\n\nVo%s bagage%s en soute :\n", lugCounting > 1 ? "s" : "tre",
+                ticket->luggageCount > 1 ? "s" : "");
 
     }
 
-    printf("\n\tVous pouvez deposer %d bagage%s en soute.\n", ticket->luggageCount,
-           ticket->luggageCount > 1 ? "s" : "");
+    printf("\n\tVous pouvez deposer %d bagage%s en soute.\n", lugCounting,
+           lugCounting > 1 ? "s" : "");
 
-    for (int i = 0; i < ticket->luggageCount; ++i) {
+    for (int i = 0; i < lugCounting; ++i) {
 
         // Récupere le poid du/des bagages
         printf("\tPoids du bagage n°%d en kg (max 20kg sinon supplement) : ", i + 1);
         getValue("%f", &ticket->luggagesWeight[i]);
 
         // Ajoute le poids du/des bagages dans le fichier du billet
-        fprintf(file, "Numero de bagage \t %d\n", i);
-        fprintf(file, "Poids : \t%fkg\n", ticket->luggagesWeight[i]);
+        fprintf(file, "Numero de bagage \t %d\n", i+1);
+        fprintf(file, "Poids : \t%.2fkg\n", ticket->luggagesWeight[i]);
         if (ticket->vip == 1) {
             fprintf(file, "Bagage prioritaire \n");
         } else {
             fprintf(file, "Bagage non prioritaire\n");
         }
+        // on incrémente le poids total des bagages dans l'avion et le nombre total
+        luggagesCounting++;
+        luggagesWeight += ticket->luggagesWeight[i];
     }
 
     fprintf(file, "\n__________________________________________");
 
-    fclose(file);
 
-
-    if (ticket->luggageCount > 1) {
+    if (lugCounting > 1) {
         printf("\tVos tickets bagages ont ete generes et sont disponibles dans le dossier \"data\"");
-    } else if (ticket->luggageCount == 1) {
+    } else if (lugCounting == 1) {
         printf("\tVotre ticket bagage a ete genere et est disponible dans le dossier \"data\"");
     }
+
+    // on remet les nouvelles données dans le fichier
+
+    destinationFile = fopen(nameDestFile, "w");
+    fprintf(destinationFile, "%f %d", luggagesWeight, luggagesCounting);
+    for (int j = 0; j < passengerCount; ++j)
+        fprintf(destinationFile, "\n%d %d %d", seatXYVIP[passengerCount][0], seatXYVIP[passengerCount][1],
+                seatXYVIP[passengerCount][2]);
+
+    fclose(destinationFile);
+    fclose(file);
 }
 
 void saveTicketPassenger(Ticket *ticket) {
@@ -342,14 +389,14 @@ void saveTicketPassenger(Ticket *ticket) {
     char ticketFilename[40];
     sprintf(ticketFilename, "data/ticketsPassenger/%s.txt", ticket->id);
     ticketFile = fopen(ticketFilename, "a");
-    if(ticketFile == NULL)
+    if (ticketFile == NULL)
         // Si le dossier n'existe pas, on le crée
         createPath("data/ticketsPassenger");
 
     fprintf(ticketFile, "__________________________________________\n\n");
 
     if (ticket->vip == 2) {
-        fprintf(ticketFile,"Felicitation vous etes VIP !\n");
+        fprintf(ticketFile, "Felicitation vous etes VIP !\n");
     }
     fprintf(ticketFile, "\tNom : %s \tPrenom : %s\n", ticket->passenger.lastname, ticket->passenger.firstname);
 
