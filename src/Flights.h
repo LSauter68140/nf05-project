@@ -100,7 +100,7 @@ void deleteTickets(Ticket *ticketsToDelete, int ticketsToDeleteCount, Ticket *ti
 /**
  * @brief   Permet d'ajouter un vol avec toutes les infos le concernant
  */
-void addFlight();
+void addFlight(void);
 
 /**
  * @brief   Supprime le vol du fichier @a data/flights.txt et le met dans le fichier @a data/history/flights.txt pour avoir un historique des vols
