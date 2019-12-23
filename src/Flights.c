@@ -9,7 +9,6 @@
 
 Flight *parseFlights(int *flightCount) {
     Flight *flights = malloc(0);
-
     FILE *flightsFile;
     FILE *destinationFile;
     int seatX, seatY, seatVip, i, luggagesCount;
@@ -18,27 +17,27 @@ Flight *parseFlights(int *flightCount) {
     char choice;
 
     flightsFile = fopen("data/flights.txt", "r");
-    if (flightsFile == NULL){
-        // on crée le fichier
+    if (flightsFile == NULL) {
+        // on crée le dossier data
         createPath("data");
-        printf("\n Aucun vol trouve \n");
-        do{
-            printf("Voulez vous en ajouter un ? (O) ou quitter le programme et ajouter un fichier à data/flights.txt (n)\n");
+        
+        printf("/!\\ Aucun vol trouve /!\\\n");
+        do {
+            printf("Voulez-vous en ajouter un (O) ou quitter le programme (N) ? ");
             getValue("%c", &choice);
 
         } while (choice != 'o' && choice != 'O' && choice != 'n' && choice != 'N');
-        if (choice == 'n' || choice == 'N')
+
+        if (choice == 'n' || choice == 'N') {
             exit(EXIT_SUCCESS);
+        }
 
-
-        // on ajoute ainsi le 1er vol
-        addFlight(flights, flightCount);
+        // on ajoute le 1er vol
+        addFlight();
         fclose(flightsFile);
         flights = parseFlights(flightCount);
         return flights;
     }
-
-
 
     for (i = 0; !feof(flightsFile); i++) {
         flights = realloc(flights, (i + 1) * sizeof(Flight));
@@ -281,9 +280,9 @@ void boardFlight(Flight *flights, int flightCount, Ticket *tickets, int ticketCo
     free(flightTickets);
 }
 
-void addFlight() {
+void addFlight(void) {
     FILE *flightsFile = fopen("data/flights.txt", "a+");
-    FILE *visaFile = fopen("data/nationalities.txt","a+");
+    FILE *nationalitiesFile = fopen("data/nationalities.txt","a+");
     Flight newFlight;
     char contryName[50], buffer[50], nationality[50];
 
@@ -331,8 +330,8 @@ void addFlight() {
         newFlight.destination[i] = tolower(newFlight.destination[i]);
     }
 
-    while (!feof(visaFile)) {
-        fscanf(visaFile, "%s %s", contryName, buffer);
+    while (!feof(nationalitiesFile)) {
+        fscanf(nationalitiesFile, "%s %s", contryName, buffer);
         contryName[0] = tolower(contryName[0]);
 
         if (strcmp(newFlight.destination, contryName) == 0) {
@@ -352,11 +351,14 @@ void addFlight() {
         for (int i = 1; nationality[i] != '\0' ; ++i) {
             nationality[i] = tolower(nationality[i]);
         }
-        if (ftell(visaFile) !=0)
-            fprintf(visaFile, "\n");
+        if (ftell(nationalitiesFile) != 0) {
+            fprintf(nationalitiesFile, "\n");
+        }
+
+        fprintf(nationalitiesFile, "%s %s", newFlight.destination, nationality);
     }
 
-    fclose(visaFile);
+    fclose(nationalitiesFile);
     fclose(flightsFile);
 }
 

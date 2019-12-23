@@ -27,8 +27,8 @@ int main() {
     int ticketCount = 0, flightCount = 0;
 
     do {
-        tickets = parseTickets(&ticketCount);
         flights = parseFlights(&flightCount);
+        tickets = parseTickets(&ticketCount);
 
         printf("Projet de NF05 - Gestion des passagers dans un aeroport\n\n");
         printf("============== Menu principal ==============\n");
