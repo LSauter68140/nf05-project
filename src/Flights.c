@@ -493,16 +493,12 @@ int checkFrontiers(Ticket *ticket, int flightCount) {
         for (int i = 0; i < flightCount; i++) {
             fscanf(nationalitiesFile, "%s %s", nationalities[i][0], nationalities[i][1]);
         }
-     
+
         for (j = 0; j < flightCount && strcmp(ticket->destination, nationalities[j][0]) != 0; ++j);
 
-        printf(" j = %d", j);
-        printf(">%s\n", ticket->destination);
-        printf(">>%s\n", nationalities[j][0]);
 
         if (strcmp(ticket->destination, nationalities[j][0]) == 0) {
             for(int i = 0; ticket->passenger.nationality[i]!= '\0'; i++) {
-                printf("%d", i);
                 ticket->passenger.nationality[i] = tolower(ticket->passenger.nationality[i]); // si jamais il y a une majuscule
             }
 
