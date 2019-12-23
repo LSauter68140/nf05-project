@@ -34,8 +34,8 @@ Flight *parseFlights(int *flightCount) {
 
         // on ajoute le 1er vol
         addFlight();
-        fclose(flightsFile);
         flights = parseFlights(flightCount);
+        clearScreen();
         return flights;
     }
 

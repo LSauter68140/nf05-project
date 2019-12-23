@@ -292,7 +292,7 @@ void getTicketId(Ticket *ticket, char *ticketId) {
 void addLuggages(Ticket *ticket) {
 
     char filename[55];
-    char nameDestFile[50];
+    char nameDestFile[67];
     float luggagesWeight = 0;
     int luggagesCounting = 0, passengerCount = 0;
     int seatXYVIP[500][3]; // on considère qu'il n'y a pas plus de 500pasagers sur chaque vol
