@@ -279,13 +279,12 @@ void boardFlight(Flight *flights, int flightCount, Ticket *tickets, int ticketCo
     }
 
     // on met le vol qui est parti dans l'historique
-    printf("erreur ici ???");
     removeFlight(flights, flightCount, flightIndex);
-    printf("ou la ?");
     free(flightTickets);
 }
 
 void addFlight(void) {
+
     FILE *flightsFile = fopen("data/flights.txt", "a+");
     FILE *nationalitiesFile = fopen("data/nationalities.txt","a+");
     Flight newFlight;
@@ -368,64 +367,16 @@ void addFlight(void) {
 }
 
 void removeFlight(Flight *flights, int flightCount, int flightIndex) {
-    printf("ras le cul");
+
     FILE *flightsFile = NULL ;
-    FILE *historyFile = NULL;
-    FILE *destinationFile=NULL;
     char destinationFilename[70];
-    int passengerCount = 0, vipCount = 0, luggagesCount;
-    float luggagesWeight;
-    printf("oupsi");
+
+    //on ouvre le fichiers des vols
     flightsFile = fopen("data/flights.txt", "w");
-    historyFile = fopen("data/history/flights2.txt", "a+");
-
-    printf("bonjou");
-    // On ouvre le fichier du vol
     sprintf(destinationFilename, "data/flights/%s.txt", flights[flightIndex].destination);
-    destinationFile = fopen(destinationFilename, "r");
-    printf("nbr de vol %d", flightCount);
-    if (destinationFile == NULL) {
-        printf("Erreur : fichier %s manquant", destinationFilename);
-        // on ne met rien dans l'historique mais on supprime quand meme le vol
 
-        for (int i = 0; i < flightCount; ++i) {
-            if (i != flightIndex) {
-                if (i > 0) {
-                    fprintf(flightsFile, "\n");
-                }
-                fprintf(flightsFile, "%s %s %s %d %d \t%d %d %d %d %d", flights[i].destination, flights[i].plane,
-                        flights[i].flightId, flights[i].rowCount, flights[i].columnCount,
-                        flights[i].date.day,flights[i].date.month, flights[i].date.year, flights[i].date.hour,
-                        flights[i].date.minute);
-            }
-        }
-        fclose(flightsFile);
-        fclose(destinationFile);
-        fclose(historyFile);
-        return;
-    }
 
-    printf("\nje suis la");
-    // on recupere le poids des bagages et leur nombre
-    fscanf(destinationFile, "%f %d", &luggagesWeight, &luggagesCount);
 
-    while(!feof(destinationFile)) {
-        int vip;
-        fscanf(destinationFile, "%d %d %d", &vip, &vip, &vip);
-        vipCount += (vip == 0) ? 0 : 1; // on rajoute 1 si vip sinon on ne change pas la valeur
-        passengerCount++;
-    }
-
-    // On ajoute le vol dans le fichier de l'historique des vols
-    fseek(historyFile, -1,SEEK_END);
-    if (ftell(historyFile)!=0)
-        fprintf(historyFile, "\n");
-    printf("zrgrgg");
-    fprintf(historyFile, "%s %s %s %d %d %d %d %d %d %d %f %d %d %d", flights[flightIndex].destination, flights[flightIndex].plane,
-            flights[flightIndex].flightId, flights[flightIndex].rowCount, flights[flightIndex].columnCount,
-            flights[flightIndex].date.day,flights[flightIndex].date.month, flights[flightIndex].date.year, flights[flightIndex].date.hour,
-            flights[flightIndex].date.minute, luggagesWeight, luggagesCount, passengerCount, vipCount);
-    printf("\ndest %s", flights[flightIndex].destination);
 
     // On remet tous les vols dans le fichier, sauf celui à supprimer
     for (int i = 0; i < flightCount; ++i) {
@@ -441,10 +392,8 @@ void removeFlight(Flight *flights, int flightCount, int flightIndex) {
     }
 
     fclose(flightsFile);
-    printf("hellttto");
     remove(destinationFilename);
-    fclose(destinationFile);
-    fclose(historyFile);
+
 }
 
 void deleteTickets(Ticket *ticketsToDelete, int ticketsToDeleteCount, Ticket *tickets, int ticketCount) {
@@ -525,7 +474,7 @@ int checkFrontiers(Ticket *ticket, int flightCount) {
         for (; !feof(nationalitiesFile); visaCount++) {
             fscanf(nationalitiesFile, "%s %s", buffer, buffer);
          }
-        printf("\n %d", visaCount);
+
         char nationalities[visaCount][2][50];
         rewind(nationalitiesFile);
 
@@ -533,8 +482,7 @@ int checkFrontiers(Ticket *ticket, int flightCount) {
             fscanf(nationalitiesFile, "%s %s", nationalities[k][0], nationalities[k][1]);
         }
 
-      for (j = 0; j < visaCount && strcmp(ticket->destination, nationalities[j][0]) != 0; ++j)
-          printf(" visa %d, dest %s nat %s\n", visaCount, ticket->destination, nationalities[j][0]);
+      for (j = 0; j < visaCount && strcmp(ticket->destination, nationalities[j][0]) != 0; ++j);
 
 
         if (strcmp(ticket->destination, nationalities[j][0]) == 0) {
@@ -545,7 +493,6 @@ int checkFrontiers(Ticket *ticket, int flightCount) {
             for(int i = 0; nationalities[j][1][i]!= '\0'; i++) {
                 nationalities[j][1][i] = tolower(nationalities[j][1][i]); // si jamais il y a une majuscule
             }
-            printf("\nnat |%s| visa |%s|",ticket->passenger.nationality, nationalities[j][1]);
 
             printf("\tPassager : %s %s\n\tNationalite : %s\n\tDestination : %s\n\tNumero de billet : %s\n",
                     ticket->passenger.lastname, ticket->passenger.firstname, ticket->passenger.nationality,
